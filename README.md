@@ -2,6 +2,9 @@
 ## Features
 
 - store recipes per user
+  - all recipes
+  - recipes the user has saved/added
+  - ability to search all recipes and save to their own "page"
 - allow easy searching based on dish name and ingrediants
 - ability to add, edit and remove recipes
 - menu planner
