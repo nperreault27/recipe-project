@@ -82,7 +82,9 @@ export default function RootLayout({
                     h={'100%'}
                     w={'100%'}
                     pr={'sm'}
-                    bg={theme.colors?.myGreen[1]}
+                    bg={
+                      theme.colors?.myGreen ? theme.colors.myGreen[1] : 'white'
+                    }
                     miw={'345px'}
                   >
                     <GoHomeButton />
