@@ -1,6 +1,6 @@
-import { AspectRatio, Group, Paper, Stack } from '@mantine/core';
-import RandomRecipe from './RandomRecipe';
+import { AspectRatio, Group, Paper, Skeleton, Stack } from '@mantine/core';
 import FeaturedRecipe from './FeaturedRecipe';
+import { Suspense } from 'react';
 import SearchBar from './SearchBar';
 
 const HomePage = () => {
@@ -12,8 +12,9 @@ const HomePage = () => {
         </Paper>
       </AspectRatio>
       <Group grow p='0' h={'100%'}>
-        <RandomRecipe />
-        <FeaturedRecipe />
+        <Suspense fallback={<Skeleton w={'100%'} h={300} />}>
+          <FeaturedRecipe />
+        </Suspense>
       </Group>
     </Stack>
   );
