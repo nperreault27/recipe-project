@@ -15,9 +15,12 @@ import { useEffect, useState } from 'react';
 export const SearchBar = () => {
   const [value, setValue] = useState('');
   const [data, setData] = useState([]);
+
   const theme = useMantineTheme();
   const handleSearch = () => {
-    console.log('searching:', value);
+    const baseUrl = window.location.origin;
+    const searchUrl = baseUrl + '/search?value=' + value;
+    window.location.href = searchUrl;
   };
 
   useEffect(() => {
