@@ -1,27 +1,28 @@
 import { createClient } from '@/lib/supabase/server';
 import RecipeCard from './RecipeCard';
+import { Flex } from '@mantine/core';
 
 export const SearchResults = async ({ searchParams }) => {
   const search = (await searchParams).value.toString();
   const supabase = await createClient();
-
-  const { count } = await supabase
+  const { data: recipes = [], error } = await supabase
     .from('all_recipies')
-    .select('*', { count: 'exact' })
+    .select('*')
     .ilike('recipe_name', '%' + search + '%');
-  const dataDisplay = async () => {
-    if (!count) {
+  const count = recipes ? recipes.length : 0;
+  const dataDisplay = () => {
+    if (!count || error) {
       return <div> no results</div>;
     }
-    const { data: recipes = [] } = await supabase
-      .from('all_recipies')
-      .select('*')
-      .ilike('recipe_name', '%' + search + '%');
-
-    return recipes?.map((recipe) => (
+    return recipes!.map((recipe) => (
       <RecipeCard key={recipe.id} data={recipe} />
     ));
   };
-  return await dataDisplay();
+
+  return (
+    <Flex gap={'sm'} justify={'flex-start'} wrap={'wrap'}>
+      {dataDisplay()}
+    </Flex>
+  );
 };
 export default SearchResults;

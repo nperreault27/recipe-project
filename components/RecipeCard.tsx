@@ -24,7 +24,6 @@ type Recipe = {
 const RecipeCard = ({ data }: { data: Recipe }) => {
   const { image_link: imageSrc, time, rating, recipe_name: name } = data;
   const starRating = Math.round(rating * 2) / 2;
-  console.log(data);
   return (
     <Paper shadow='md' withBorder miw={275}>
       <AspectRatio ratio={1 / 1}>
