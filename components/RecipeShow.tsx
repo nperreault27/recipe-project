@@ -27,8 +27,8 @@ const RecipeShow = ({ data }: { data: Recipe }) => {
   } = data;
 
   const starRating = Math.round(rating || 0 * 2) / 2;
-  let displayTime = `${ time || 0 } Minutes`;
-  if (displayTime.split('')[0] === '1') displayTime = `${ time } Minute`;
+  let timeToCook = `${ time || 0 } Minutes`;
+  if (timeToCook.split('')[0] === '1') timeToCook = `${ time } Minute`;
 
   const allIngredients = ingredients?.map && ingredients.map((ingredient, index) => {
     return (
@@ -52,7 +52,7 @@ const RecipeShow = ({ data }: { data: Recipe }) => {
 
       <Group justify='space-between' mt='md' mb='xs'>
         <Rating size='md' value={starRating} fractions={2} readOnly />
-        <Badge color='pink'>{displayTime}</Badge> 
+        <Badge color='pink'>{timeToCook}</Badge> 
       </Group>
 
     </Group>
@@ -87,7 +87,7 @@ const RecipeShow = ({ data }: { data: Recipe }) => {
 
       <Grid.Col mt='xl' span={12}>
         <Title order={2} style={{textTransform: 'capitalize'}}>
-          How to Make {recipe_name} in {displayTime}</Title>
+          How to Make {recipe_name} in {timeToCook}</Title>
         <List size='lg' listStyleType='decimal'>
           {allSteps}</List>
       </Grid.Col>
