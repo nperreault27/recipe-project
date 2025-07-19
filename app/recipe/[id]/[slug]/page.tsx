@@ -7,16 +7,13 @@ const GetRecipeShow = async ({ params }: { params: Promise<{ id: string, slug: s
     const { id, slug: name } = await params;
     
     const supabase = await createClient();
-    const { data: detailedRecipeData = {}, error } = await supabase
-        .from('all_recipies')
-        .select('*')
-        .filter('id', 'in', `(${id})`)
-        .single();
+    const { data: detailedRecipeData, error } = await supabase
+    .from('all_recipies').select('*').eq('id', id);
 
-    if (error) return <NotFound error ={`Cannot retrieve the data of '${name}' with id '${id}'.`} />;
+    if (error) return <NotFound id={id} slug={name} error ={`Cannot retrieve the data of '${name}' with id '${id}'.`} />;
 
     return (
-        <RecipeShow data={detailedRecipeData} />
+        <RecipeShow data={detailedRecipeData[0]} />
     );
 };
 

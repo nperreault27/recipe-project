@@ -13,6 +13,8 @@ import {
   Paper
 } from '@mantine/core';
 
+import { formatTime } from '@/app/utils/formatTime';
+
 import { Recipe } from '@/app/types/index';
 
 const RecipeShow = ({ data }: { data: Recipe }) => {
@@ -27,8 +29,7 @@ const RecipeShow = ({ data }: { data: Recipe }) => {
   } = data;
 
   const starRating = Math.round(rating || 0 * 2) / 2;
-  let timeToCook = `${ time || 0 } Minutes`;
-  if (timeToCook.split('')[0] === '1') timeToCook = `${ time } Minute`;
+  const timeToCook = formatTime(Number(time));
 
   const allIngredients = ingredients?.map && ingredients.map((ingredient, index) => {
     return (
@@ -52,7 +53,7 @@ const RecipeShow = ({ data }: { data: Recipe }) => {
 
       <Group justify='space-between' mt='md' mb='xs'>
         <Rating size='md' value={starRating} fractions={2} readOnly />
-        <Badge color='pink'>{timeToCook}</Badge> 
+        {Number(time) > 0 ? <Badge color='pink'>{timeToCook}</Badge> : <></>}
       </Group>
 
     </Group>
@@ -65,16 +66,16 @@ const RecipeShow = ({ data }: { data: Recipe }) => {
 
     <Grid gutter={{ base: 5, xs: 'md', md: 'xl', xl: 50 }}>
       
-      <Grid.Col span={{ base: 12, md: 6, lg: 6 }}>
+      {image_link === 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/300px-No_image_available.svg.png' ?
+      <></> : <Grid.Col span={{ base: 12, md: 6, lg: 6 }}>
         <Image
           radius='md'
           h={300}
           width='100%'
           fit='contain'
           src={image_link}
-          fallbackSrc='https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/300px-No_image_available.svg.png'
           alt={`Image of a ${recipe_name || 'missing'} recipe`} />
-      </Grid.Col>
+      </Grid.Col>}
   
       <Grid.Col mt='lg' span={{ base: 12, md: 6, lg: 6 }}>
         <Paper shadow='md' radius='md' p='xl' style={{ backgroundColor: '#DAF3E2'}}>
