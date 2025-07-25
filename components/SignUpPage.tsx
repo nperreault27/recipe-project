@@ -7,14 +7,13 @@ import {
   Stack,
   TextInput,
   Title,
-  List,
+  useMantineTheme,
 } from "@mantine/core";
-import { isEmail, matches, useForm } from "@mantine/form";
-import { Dot } from "lucide-react";
-import { useState } from "react";
+import { isEmail, useForm } from "@mantine/form";
+import AdvancedPasswordInput from "./AdvancedPasswordInput";
 
 const SignUpPage = () => {
-  const [isPasswordFocused, setIsPasswordFocused] = useState(false); //not working right now, need to debug
+  const theme = useMantineTheme();
 
   const form = useForm({
     mode: "uncontrolled",
@@ -28,12 +27,15 @@ const SignUpPage = () => {
       name: (value) =>
         value.length < 2 ? "Name must have at least 2 letters" : null,
       email: isEmail("Enter a Valid Email"),
-      password: matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$@!%&*?])[A-Za-z\d#$@!%&*?]{8,30}$/,
-        "Enter a Valid Password"
-      ),
-      confirmPassword: (value, values) =>
-        value !== values.password ? "Passwords did not match" : null,
+      password: (value) => {
+        if (value.length < 6) return "Password must be at least 6 characters";
+        if (!/[0-9]/.test(value)) return "Must include a number";
+        if (!/[a-z]/.test(value)) return "Must include a lowercase letter";
+        if (!/[A-Z]/.test(value)) return "Must include an uppercase letter";
+        if (!/[$&+,:;=?@#|'<>.^*()%!-]/.test(value)) return "Must include a special symbol";
+        if (value.length > 30) return "Password must be fewer than 30 characters"
+        return null;
+      },
     },
   });
 
@@ -44,14 +46,14 @@ const SignUpPage = () => {
           <Title order={1}>Sign Up</Title>
 
           <form onSubmit={form.onSubmit(console.log)}>
-            <Stack gap="md">
+            <Stack gap="md" w={300}>
               <TextInput
                 label="Full Name"
                 withAsterisk
                 variant="filled"
+                autoComplete="off"
                 required
                 placeholder="Enter your full name..."
-                w={300}
                 key={form.key("name")}
                 {...form.getInputProps("name")}
               />
@@ -61,9 +63,14 @@ const SignUpPage = () => {
                 withAsterisk
                 required
                 variant="filled"
+                autoComplete="off"
+                styles={{
+                  input: {
+                    borderColor: "#000000",
+                  },
+                }}
                 placeholder="foodlover@gmail.com"
                 key={form.key("email")}
-                w={300}
                 {...form.getInputProps("email")}
               />
 
@@ -72,45 +79,17 @@ const SignUpPage = () => {
                 withAsterisk
                 required
                 variant="filled"
-                placeholder="Enter Password..."
+                autoComplete="off"
+                placeholder="Password..."
                 key={form.key("password")}
-                onFocus={() => setIsPasswordFocused(true)}
-                onBlur={() => setIsPasswordFocused(false)}
-                w={300}
-                {...form.getInputProps("password", {
-                  onFocus: () => {
-                    console.log("ASDKLSADJ");
-                    setIsPasswordFocused(true);
-                  },
-                  onBlur: () => {
-                    setIsPasswordFocused(false);
-                  },
-                })}
-              />
-
-              {isPasswordFocused && (
-                <List size="xs" center ml="xl" icon={<Dot strokeWidth="2px" />}>
-                  <List.Item>Minimum of 1 uppercase letter</List.Item>
-                  <List.Item>Minimum of 1 lowercase letter</List.Item>
-                  <List.Item>Minimum of 1 special character</List.Item>
-                  <List.Item>Minimum of 1 number</List.Item>
-                  <List.Item>Minimum of 8 Characters</List.Item>
-                  <List.Item>Maximum of 30 Characters</List.Item>
-                </List>
-              )}
-
-              <PasswordInput
-                label="Confirm Password"
-                withAsterisk
-                required
-                variant="filled"
-                placeholder="Confirm Password..."
-                key={form.key("confirmPassword")}
-                w={300}
-                {...form.getInputProps("confirmPassword")}
+                {...form.getInputProps("password")}
               />
               <Group justify="center" mt="lg">
-                <Button type="submit" variant="filled" color="myYellow">
+                <Button
+                  type="submit"
+                  variant="filled"
+                  color={theme.colors.myGreen[8]}
+                >
                   Submit
                 </Button>
               </Group>
