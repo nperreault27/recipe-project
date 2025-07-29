@@ -20,13 +20,10 @@ export const SearchAndFilterBar = async () => {
         ? result.data!.map((recipe) => recipe.recipe_name)
         : [];
     });
-  const submit = async (data) => {
-    'use server';
-    console.log(data);
-  };
+
   return (
     <Paper w={'100%'} withBorder shadow='md' p={'md'}>
-      <form action={submit}>
+      <form>
         <Group justify='space-between' w={'100%'}>
           <Autocomplete
             name='recipeName'

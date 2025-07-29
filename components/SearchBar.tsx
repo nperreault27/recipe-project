@@ -1,66 +1,44 @@
-'use client';
-import { createClient } from '@/lib/supabase/client';
-import {
-  Autocomplete,
-  Button,
-  useMantineTheme,
-  Group,
-  Stack,
-  Text,
-  Paper,
-} from '@mantine/core';
+import { createClient } from '@/lib/supabase/server';
+import { Autocomplete, Button, Stack, Text, Paper, Group } from '@mantine/core';
 import { Search } from 'lucide-react';
-import { useEffect, useState } from 'react';
-
-export const SearchBar = () => {
-  const [value, setValue] = useState('');
-  const [data, setData] = useState([]);
-
-  const theme = useMantineTheme();
-  const handleSearch = () => {
-    const baseUrl = window.location.origin;
-    const searchUrl = baseUrl + '/search?value=' + value;
-    window.location.href = searchUrl;
-  };
-
-  useEffect(() => {
-    createClient()
-      .from('all_recipies')
-      .select('recipe_name')
-      .then((result) => {
-        if (result.status === 200) {
-          const { data = [] } = result || { data: [] };
-          setData(data.map((recipe) => recipe.recipe_name));
-        }
-      });
-  }, []);
+//TODO: needs routing to direct to /search
+export const SearchBar = async () => {
+  const supabase = await createClient();
+  const recipeNames = await supabase
+    .from('all_recipies')
+    .select('recipe_name')
+    .then((result) => {
+      return result.status === 200
+        ? result.data!.map((recipe) => recipe.recipe_name)
+        : [];
+    });
   return (
     <Stack h={'100%'} align={'center'} justify={'center'} gap={'sm'}>
       <Paper shadow='md' withBorder p={'md'}>
         <Text fs={'xl'} fw={'700'}>
           Search for Your Favorite Recipes:
         </Text>
-        <Group gap={'xs'}>
-          <Autocomplete
-            w={'250'}
-            aria-label='Search Input'
-            data={data}
-            radius={'md'}
-            value={value}
-            onChange={setValue}
-            withScrollArea
-            clearable
-            placeholder='What do you want to make today?'
-          />
-          <Button
-            onClick={handleSearch}
-            radius={'md'}
-            color={theme.colors.myYellow[3]}
-            bd={'1px solid black'}
-          >
-            <Search />
-          </Button>
-        </Group>
+        <form>
+          <Group gap='xs'>
+            <Autocomplete
+              w={'250'}
+              name='recipeName'
+              data={recipeNames}
+              radius={'md'}
+              withScrollArea
+              clearable
+              placeholder='What do you want to make today?'
+            />
+            <Button
+              type='submit'
+              color={'#ffca64'}
+              bd={'1px solid black'}
+              radius={'md'}
+            >
+              <Search />
+            </Button>
+          </Group>
+        </form>
       </Paper>
     </Stack>
   );

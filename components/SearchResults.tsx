@@ -3,15 +3,29 @@ import RecipeCard from './RecipeCard';
 import { Flex } from '@mantine/core';
 
 export const SearchResults = async ({ searchParams }) => {
-  const search = (await searchParams).value.toString();
+  const { recipeName: search = '', ingredients = '' } = await searchParams;
+
   const supabase = await createClient();
-  const { data: recipes = [], error } = await supabase
-    .from('all_recipies')
-    .select('*')
-    .ilike('recipe_name', '%' + search + '%');
+  let query = supabase.from('all_recipies').select('*');
+  if (search !== '') query = query.ilike('recipe_name', '%' + search + '%');
+  if (ingredients !== '')
+    query = query.contains(
+      'ingredients',
+      ingredients.split(' ').map((i: string) => {
+        return i.toLocaleLowerCase();
+      })
+    );
+  const recipes = await query.then((results) => {
+    if (results.status === 200) {
+      console.log(results.data);
+      return results.data;
+    }
+    console.log(results);
+    return [];
+  });
   const count = recipes ? recipes.length : 0;
   const dataDisplay = () => {
-    if (!count || error) {
+    if (!count) {
       return <div> no results</div>;
     }
     return recipes!.map((recipe) => (
