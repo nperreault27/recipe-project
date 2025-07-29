@@ -1,7 +1,7 @@
 import SearchAndFilterBar from '@/components/SearchAndFilterBar';
 import SearchResults from '@/components/SearchResults';
 import { Stack } from '@mantine/core';
-export const Search = ({ searchParams }) => {
+const RecipeSearch = ({ searchParams }) => {
   return (
     <Stack p={'md'}>
       <SearchAndFilterBar />
@@ -9,4 +9,4 @@ export const Search = ({ searchParams }) => {
     </Stack>
   );
 };
-export default Search;
+export default RecipeSearch;
