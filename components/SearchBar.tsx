@@ -18,7 +18,7 @@ export const SearchBar = async () => {
         <Text fs={'xl'} fw={'700'}>
           Search for Your Favorite Recipes:
         </Text>
-        <form>
+        <form method='GET' action='/search'>
           <Group gap='xs'>
             <Autocomplete
               w={'250'}
