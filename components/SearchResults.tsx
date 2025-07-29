@@ -1,11 +1,12 @@
 import { createClient } from '@/lib/supabase/server';
 import RecipeCard from './RecipeCard';
 import { Flex } from '@mantine/core';
+import { SearchParams } from '@/app/search/page';
 
 export const SearchResults = async ({
   searchParams,
 }: {
-  searchParams: { recipeName: string; ingredients: string };
+  searchParams: Promise<SearchParams>;
 }) => {
   const { recipeName: search = '', ingredients = '' } = await searchParams;
 

@@ -1,10 +1,16 @@
 import SearchAndFilterBar from '@/components/SearchAndFilterBar';
 import SearchResults from '@/components/SearchResults';
 import { Stack } from '@mantine/core';
+export type SearchParams = {
+  recipeName?: string;
+  ingredients?: string;
+  [key: string]: string | undefined;
+};
+
 const RecipeSearch = ({
   searchParams,
 }: {
-  searchParams: { recipeName: string; ingredients: string };
+  searchParams: Promise<SearchParams>;
 }) => {
   return (
     <Stack p={'md'}>
