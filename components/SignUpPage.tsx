@@ -1,4 +1,4 @@
-"use client"; // change this later
+"use client";
 import { createClient } from "@/lib/supabase/client";
 import {
   Button,
@@ -10,7 +10,6 @@ import {
   Title,
 } from "@mantine/core";
 import { isEmail, useForm } from "@mantine/form";
-import { getDisplayName } from "next/dist/shared/lib/utils";
 
 const SignUpPage = () => {
   const supabase = createClient();
@@ -50,7 +49,7 @@ const SignUpPage = () => {
     password: string;
     name: string;
   }) => {
-    let { data, error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email: values.email,
       password: values.password,
       options: {
@@ -62,6 +61,11 @@ const SignUpPage = () => {
 
     if (error) {
       console.error('Signup error: ', error);
+    }
+
+    if (typeof window !== undefined) {
+      const homePageUrl = "/";
+      window.location.href = homePageUrl;
     }
   };
 
