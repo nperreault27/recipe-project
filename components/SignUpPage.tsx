@@ -40,7 +40,7 @@ const SignUpPage = () => {
       },
       confirmPassword: (value, values) => {
         if (value !== values.password) return "Passwords do not Match";
-      }
+      },
     },
   });
 
@@ -60,13 +60,11 @@ const SignUpPage = () => {
     });
 
     if (error) {
-      console.error('Signup error: ', error);
+      console.error("Signup error: ", error);
     }
 
-    if (typeof window !== undefined) {
-      const homePageUrl = "/";
-      window.location.href = homePageUrl;
-    }
+    const homePageUrl = "/";
+    window.location.href = homePageUrl;
   };
 
   return (
