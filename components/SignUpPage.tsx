@@ -1,4 +1,5 @@
 "use client"; // change this later
+import { createClient } from "@/lib/supabase/client";
 import {
   Button,
   Group,
@@ -7,16 +8,16 @@ import {
   Stack,
   TextInput,
   Title,
-  useMantineTheme,
 } from "@mantine/core";
 import { isEmail, useForm } from "@mantine/form";
-import AdvancedPasswordInput from "./AdvancedPasswordInput";
+import { getDisplayName } from "next/dist/shared/lib/utils";
 
 const SignUpPage = () => {
-  const theme = useMantineTheme();
+  const supabase = createClient();
 
   const form = useForm({
     mode: "uncontrolled",
+    onSubmitPreventDefault: "validation-failed",
     initialValues: {
       name: "",
       email: "",
@@ -26,18 +27,43 @@ const SignUpPage = () => {
     validate: {
       name: (value) =>
         value.length < 2 ? "Name must have at least 2 letters" : null,
-      email: isEmail("Enter a Valid Email"),
+      email: isEmail("Invalid Email"),
       password: (value) => {
         if (value.length < 6) return "Password must be at least 6 characters";
         if (!/[0-9]/.test(value)) return "Must include a number";
         if (!/[a-z]/.test(value)) return "Must include a lowercase letter";
         if (!/[A-Z]/.test(value)) return "Must include an uppercase letter";
-        if (!/[$&+,:;=?@#|'<>.^*()%!-]/.test(value)) return "Must include a special symbol";
-        if (value.length > 30) return "Password must be fewer than 30 characters"
+        if (!/[$&+,:;=?@#|'<>.^*()%!-]/.test(value))
+          return "Must include a special symbol";
+        if (value.length > 30)
+          return "Password must be fewer than 30 characters";
         return null;
       },
+      confirmPassword: (value, values) => {
+        if (value !== values.password) return "Passwords do not Match";
+      }
     },
   });
+
+  const handleSubmit = async (values: {
+    email: string;
+    password: string;
+    name: string;
+  }) => {
+    let { data, error } = await supabase.auth.signUp({
+      email: values.email,
+      password: values.password,
+      options: {
+        data: {
+          display_name: values.name,
+        },
+      },
+    });
+
+    if (error) {
+      console.error('Signup error: ', error);
+    }
+  };
 
   return (
     <>
@@ -45,9 +71,10 @@ const SignUpPage = () => {
         <Stack gap="xl">
           <Title order={1}>Sign Up</Title>
 
-          <form onSubmit={form.onSubmit(console.log)}>
+          <form method="POST" onSubmit={form.onSubmit(handleSubmit)}>
             <Stack gap="md" w={300}>
               <TextInput
+                name="name"
                 label="Full Name"
                 withAsterisk
                 variant="filled"
@@ -59,6 +86,7 @@ const SignUpPage = () => {
               />
 
               <TextInput
+                name="email"
                 label="Email"
                 withAsterisk
                 required
@@ -75,6 +103,7 @@ const SignUpPage = () => {
               />
 
               <PasswordInput
+                name="password"
                 label="Password"
                 withAsterisk
                 required
@@ -84,12 +113,21 @@ const SignUpPage = () => {
                 key={form.key("password")}
                 {...form.getInputProps("password")}
               />
+
+              <PasswordInput
+                name="confirmPassword"
+                label="Confirm Password"
+                withAsterisk
+                required
+                variant="filled"
+                autoComplete="off"
+                placeholder="Confirm Password..."
+                key={form.key("confirmPassword")}
+                {...form.getInputProps("confirmPassword")}
+              />
+
               <Group justify="center" mt="lg">
-                <Button
-                  type="submit"
-                  variant="filled"
-                  color={theme.colors.myGreen[8]}
-                >
+                <Button type="submit" variant="filled" color="#309553">
                   Submit
                 </Button>
               </Group>
