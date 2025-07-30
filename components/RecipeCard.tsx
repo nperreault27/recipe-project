@@ -15,7 +15,6 @@ import { Recipe } from '@/app/types/index';
 const RecipeCard = ({ data }: { data: Recipe }) => {
   const { image_link: imageSrc, time, rating, recipe_name: name } = data;
   const starRating = Math.round(rating * 2) / 2;
-  console.log(data);
   return (
     <Paper shadow='md' withBorder miw={275}>
       <Link href={`/recipe/${data.id}/${data.recipe_name}`}>
