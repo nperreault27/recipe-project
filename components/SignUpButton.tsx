@@ -8,8 +8,8 @@ export const SignUpButton = () => {
 
   const handleClick = () => {
     if (typeof window !== undefined) {
-      const homeUrl = window.location.origin;
-      window.location.href = homeUrl;
+      const signupPageUrl = '/signup';
+      window.location.href = signupPageUrl;
     }
   };
 
