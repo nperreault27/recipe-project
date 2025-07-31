@@ -102,7 +102,6 @@ const SignUpPage = () => {
                 name='username'
                 label='Username'
                 withAsterisk
-                variant='filled'
                 autoComplete='off'
                 required
                 styles={{
@@ -110,7 +109,7 @@ const SignUpPage = () => {
                     borderColor: '#000000',
                   },
                 }}
-                placeholder='Enter your full name...'
+                placeholder='Enter username...'
                 key={form.key('username')}
                 {...form.getInputProps('username')}
               />
@@ -125,7 +124,6 @@ const SignUpPage = () => {
                     borderColor: '#000000',
                   },
                 }}
-                variant='filled'
                 autoComplete='off'
                 placeholder='foodlover@gmail.com'
                 key={form.key('email')}
@@ -142,7 +140,6 @@ const SignUpPage = () => {
                     borderColor: '#000000',
                   },
                 }}
-                variant='filled'
                 autoComplete='off'
                 placeholder='Password...'
                 key={form.key('password')}
@@ -159,7 +156,6 @@ const SignUpPage = () => {
                     borderColor: '#000000',
                   },
                 }}
-                variant='filled'
                 autoComplete='off'
                 placeholder='Confirm Password...'
                 key={form.key('confirmPassword')}
@@ -167,8 +163,8 @@ const SignUpPage = () => {
               />
 
               <Group justify='center' mt='lg'>
-                <Button type='submit' variant='filled' color='#309553'>
-                  Submit
+                <Button type='submit' color='#309553'>
+                  Sign Up
                 </Button>
               </Group>
             </Stack>
