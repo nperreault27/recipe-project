@@ -32,8 +32,8 @@ const SignUpPage = () => {
       password: (value) => {
         const passwordValidators: string[] = [];
 
-        if (value.length < 6)
-          passwordValidators.push('Minimum of six characters');
+        if (value.length < 8)
+          passwordValidators.push('Minimum of eight characters');
         if (!/[0-9]/.test(value)) passwordValidators.push('One number');
         if (!/[a-z]/.test(value))
           passwordValidators.push('One lowercase letter');
@@ -77,7 +77,7 @@ const SignUpPage = () => {
         );
         return;
       } else {
-        alert('An unknown error occurred during signup');
+        alert(`Error: ${error.message}`);
       }
     }
 
