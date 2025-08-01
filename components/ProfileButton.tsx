@@ -10,7 +10,8 @@ import {
   MenuLabel,
   MenuTarget,
 } from '@mantine/core';
-import { Bookmark, NotebookPen, NotebookText } from 'lucide-react';
+import { Bookmark, LogOut, NotebookPen, NotebookText } from 'lucide-react';
+import { LogoutButton } from './LogoutButton';
 
 const nameToNumber = (name: string) => {
   return [...name].reduce((sum, char) => char.charCodeAt(0) + sum, 0);
@@ -36,7 +37,7 @@ export const ProfileButton = async () => {
 
   const userName = user.user_metadata.display_name;
   const color = possibleColors[nameToNumber(userName) % possibleColors.length];
-  console.log(user);
+
   return (
     <Menu trigger='hover' openDelay={100} closeDelay={400}>
       <MenuTarget>
@@ -56,7 +57,9 @@ export const ProfileButton = async () => {
         <MenuItem leftSection={<Bookmark />}>Saved Recipes</MenuItem>
         <MenuDivider />
         <MenuLabel>Account</MenuLabel>
-        <MenuItem>Logout</MenuItem>
+        <MenuItem component={LogoutButton} leftSection={<LogOut />}>
+          Logout
+        </MenuItem>
       </MenuDropdown>
     </Menu>
   );
