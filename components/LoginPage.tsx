@@ -39,6 +39,7 @@ const LoginPage = () => {
         return;
       } else {
         alert(`Error: ${error.message}`);
+        return;
       }
     }
 

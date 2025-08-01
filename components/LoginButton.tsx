@@ -8,8 +8,8 @@ export const LoginButton = () => {
 
   const handleClick = () => {
     if (typeof window !== undefined) {
-      const signupPageUrl = '/login';
-      window.location.href = signupPageUrl;
+      const loginPageUrl = '/login';
+      window.location.href = loginPageUrl;
     }
   };
 
