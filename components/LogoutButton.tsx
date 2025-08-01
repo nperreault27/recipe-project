@@ -29,7 +29,12 @@ export const LogoutButton = (
     }
   };
   return (
-    <Button variant='subtle' color='black' {...props} onClick={handleLogout}>
+    <Button
+      variant='default'
+      bd={'0px black'}
+      {...props}
+      onClick={handleLogout}
+    >
       {props.children}
     </Button>
   );
