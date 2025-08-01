@@ -26,20 +26,16 @@ const LoginPage = () => {
 
   const handleSubmit = async (values: { email: string; password: string }) => {
     const { error } = await supabase.auth.signInWithPassword({
-      email: form.values.email,
-      password: form.values.password,
+      email: values.email,
+      password: values.password,
     });
 
     if (error) {
-      if (error.message.includes('credentials')) {
-        form.setFieldError(
-          'email',
-          'Invalid Email or Password',
-        );
-        form.setFieldError(
-          'password',
-          'Invalid Email or Password',
-        );
+      const customErrorMessage = 'Invalid Email or Password';
+
+      if (error.message === 'Invalid login credentials') {
+        form.setFieldError('email', customErrorMessage);
+        form.setFieldError('password', customErrorMessage);
         return;
       } else {
         alert(`Error: ${error.message}`);
