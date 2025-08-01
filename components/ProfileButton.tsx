@@ -39,7 +39,7 @@ export const ProfileButton = async () => {
   const color = possibleColors[nameToNumber(userName) % possibleColors.length];
 
   return (
-    <Menu trigger='hover' openDelay={100} closeDelay={400}>
+    <Menu>
       <MenuTarget>
         <Avatar
           variant='filled'
