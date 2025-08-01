@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { createClient } from '@/lib/supabase/client';
 import {
@@ -100,7 +100,7 @@ const LoginPage = () => {
         </Stack>
       </Paper>
       <p style={{ marginTop: '20px' }}>
-        Don't have an account? <Anchor href='/signup'>Sign Up</Anchor>
+        Don&apos;t have an account? <Anchor href='/signup'>Sign Up</Anchor>
       </p>
     </>
   );
