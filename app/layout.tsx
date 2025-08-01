@@ -13,7 +13,7 @@ import {
   MantineProvider,
 } from '@mantine/core';
 import GoHomeButton from '@/components/GoHomeButton';
-import SignUpButton from '@/components/SignUpButton';
+import LoginButton from '@/components/LoginButton';
 import './globals.css';
 
 const defaultUrl = process.env.VERCEL_URL
@@ -88,7 +88,7 @@ export default function RootLayout({
                     miw={'345px'}
                   >
                     <GoHomeButton />
-                    <SignUpButton />
+                    <LoginButton />
                   </Group>
                 </AppShellHeader>
                 <AppShellMain>{children}</AppShellMain>
