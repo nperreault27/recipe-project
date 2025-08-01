@@ -8,6 +8,7 @@ import {
 } from '@mantine/core';
 import FeaturedRecipe from './FeaturedRecipe';
 import { Suspense } from 'react';
+import { RecipeModal } from './RecipeModal';
 
 const HomePage = () => {
   return (
@@ -19,6 +20,7 @@ const HomePage = () => {
             <br />
             (Insert Search element here)
           </Flex>
+              <RecipeModal />
         </Paper>
       </AspectRatio>
       <Group grow p='0' h={'100%'}>
