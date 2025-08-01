@@ -3,13 +3,13 @@
 import { Button, useMantineTheme } from '@mantine/core';
 import { User } from 'lucide-react';
 
-export const SignUpButton = () => {
+export const LoginButton = () => {
   const theme = useMantineTheme();
 
   const handleClick = () => {
     if (typeof window !== undefined) {
-      const signupPageUrl = '/signup';
-      window.location.href = signupPageUrl;
+      const loginPageUrl = '/login';
+      window.location.href = loginPageUrl;
     }
   };
 
@@ -23,8 +23,8 @@ export const SignUpButton = () => {
       size='lg'
       color={theme.colors.myYellow[3]}
     >
-      Sign Up
+      Log In
     </Button>
   );
 };
-export default SignUpButton;
+export default LoginButton;

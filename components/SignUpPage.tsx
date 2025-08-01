@@ -1,6 +1,7 @@
 'use client';
 import { createClient } from '@/lib/supabase/client';
 import {
+  Anchor,
   Button,
   Group,
   Paper,
@@ -171,6 +172,7 @@ const SignUpPage = () => {
           </form>
         </Stack>
       </Paper>
+      <p style={{ marginTop: '20px' }}>Have an account? <Anchor href='/login'>Log In</Anchor></p>
     </>
   );
 };

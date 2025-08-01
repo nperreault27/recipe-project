@@ -1,5 +1,4 @@
 import { createClient } from '@/lib/supabase/server';
-import SignUpButton from './SignUpButton';
 
 import {
   Avatar,
@@ -12,6 +11,7 @@ import {
 } from '@mantine/core';
 import { Bookmark, LogOut, NotebookPen, NotebookText } from 'lucide-react';
 import { LogoutButton } from './LogoutButton';
+import LoginButton from './LoginButton';
 
 const nameToNumber = (name: string) => {
   return [...name].reduce((sum, char) => char.charCodeAt(0) + sum, 0);
@@ -32,7 +32,7 @@ export const ProfileButton = async () => {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) {
-    return <SignUpButton />;
+    return <LoginButton />;
   }
 
   const userName = user.user_metadata.display_name;
