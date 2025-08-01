@@ -3,7 +3,7 @@
 import { Button, useMantineTheme } from '@mantine/core';
 import { User } from 'lucide-react';
 
-export const SignUpButton = () => {
+export const LoginButton = () => {
   const theme = useMantineTheme();
 
   const handleClick = () => {
@@ -27,4 +27,4 @@ export const SignUpButton = () => {
     </Button>
   );
 };
-export default SignUpButton;
+export default LoginButton;
