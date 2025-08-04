@@ -1,5 +1,13 @@
 import { createClient } from '@/lib/supabase/server';
-import { Autocomplete, Button, Stack, Text, Paper, Group } from '@mantine/core';
+import {
+  Autocomplete,
+  Button,
+  Stack,
+  Text,
+  Paper,
+  Group,
+  Anchor,
+} from '@mantine/core';
 import { Search } from 'lucide-react';
 //TODO: needs routing to direct to /search
 export const SearchBar = async () => {
@@ -39,6 +47,9 @@ export const SearchBar = async () => {
             </Button>
           </Group>
         </form>
+        <Anchor size='xs' underline='hover' href='/create-recipe'>
+          Create your own recipe
+        </Anchor>
       </Paper>
     </Stack>
   );
