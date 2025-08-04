@@ -9,7 +9,6 @@ export const FeaturedRecipe = async () => {
     .select('*')
     .order('rating', { ascending: false })
     .limit(2);
-  console.log(featuredRecipeData);
   return (
     <Stack miw={275}>
       <Paper shadow='md' withBorder>
