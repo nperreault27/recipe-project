@@ -7,7 +7,6 @@ export const FeaturedRecipe = async () => {
   const { data: featuredRecipeData = [] } = await supabase
     .from('all_recipies')
     .select('*')
-    .order('rating', { ascending: false })
     .limit(2);
   return (
     <Stack miw={275}>

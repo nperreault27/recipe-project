@@ -11,25 +11,43 @@ import {
   Grid,
   Image,
   Paper,
+  UnstyledButton,
+  Modal,
+  Divider,
+  Stack,
+  Button,
+  useMantineTheme,
 } from '@mantine/core';
 
 import { formatTime } from '@/app/utils/formatTime';
 
 import { Recipe } from '@/app/types/index';
+import { getStarRating } from '@/app/utils/getStarRating';
+import { useDisclosure } from '@mantine/hooks';
+import { useState } from 'react';
+import { createClient } from '@/lib/supabase/client';
 
 const RecipeShow = ({ data }: { data: Recipe }) => {
   const {
     created_by,
     ingredients,
     steps,
-    rating,
+    ratings,
     time,
     image_link,
     recipe_name,
+    id: recipeId,
   } = data;
 
-  const starRating = Math.round((rating || 0) * 2) / 2;
+  const theme = useMantineTheme();
+
+  const [opened, { open, close }] = useDisclosure(false);
+  const [user, setUser] = useState('');
+  const [updatedRatings, updateRatings] = useState(ratings);
+  const supabase = createClient();
+  const starRating = getStarRating(updatedRatings);
   const timeToCook = formatTime(Number(time));
+  const [value, setValue] = useState(starRating);
 
   const allIngredients =
     ingredients?.map &&
@@ -51,13 +69,90 @@ const RecipeShow = ({ data }: { data: Recipe }) => {
       );
     });
 
+  const handleModalOpen = async () => {
+    const {
+      data: { user: currUser },
+    } = await supabase.auth.getUser();
+    if (!currUser) {
+      window.location.href = window.location.origin + '/login';
+    } else {
+      setUser(currUser?.id || '');
+      console.log(user);
+      open();
+    }
+  };
+
+  const handleConfirm = async () => {
+    const { data, error } = await supabase
+      .from('all_recipies')
+      .select('*')
+      .eq('id', recipeId);
+    if (error) alert(error);
+    else {
+      const newRatings = data[0].ratings;
+      newRatings[user] = value;
+      console.log(newRatings);
+      const { data: data2, error: error2 } = await supabase
+        .from('all_recipies')
+        .update({ ratings: newRatings })
+        .eq('id', recipeId)
+        .select('ratings');
+
+      close();
+      if (error2) alert(error2);
+      else {
+        updateRatings(data2[0].ratings);
+      }
+    }
+  };
+
   return (
     <>
+      <Modal
+        opened={opened}
+        onClose={close}
+        title='Rate this Recipe:'
+        size='auto'
+        centered
+      >
+        <Stack gap='md'>
+          <Divider />
+          <Rating
+            size='60'
+            defaultValue={starRating}
+            fractions={2}
+            value={value}
+            onChange={setValue}
+          ></Rating>
+          <Divider />
+          <Group justify='right'>
+            <Button
+              onClick={close}
+              variant='outline'
+              color={theme.colors.myGreen[4]}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleConfirm} color={theme.colors.myGreen[2]}>
+              Confirm
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
       <Group justify='space-between' mt='md' mb='xs'>
         <Title order={1}>{recipe_name || 'Recipe'}</Title>
 
         <Group justify='space-between' mt='md' mb='xs'>
-          <Rating size='md' value={starRating} fractions={2} readOnly />
+          <UnstyledButton onClick={handleModalOpen}>
+            {starRating === 0 ? (
+              <Badge color={theme.colors.myYellow[3]}> Rate this Recipe</Badge>
+            ) : (
+              <Group gap='5'>
+                <Rating size='md' value={starRating} fractions={2} readOnly />(
+                {Object.values(ratings).length})
+              </Group>
+            )}
+          </UnstyledButton>
           {Number(time) > 0 ? <Badge color='pink'>{timeToCook}</Badge> : <></>}
         </Group>
       </Group>
