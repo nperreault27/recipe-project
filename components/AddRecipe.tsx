@@ -10,6 +10,7 @@ type RecipeFormValues = {
   ingredients: Ingredient[];
   steps: Step[];
 };
+const loginPageUrl = '/login';
 
 export const AddRecipe = () => {
   const form = useForm<RecipeFormValues>({
@@ -45,28 +46,36 @@ export const AddRecipe = () => {
 
         const supabase = createClient();
 
-        const plainIngredients = ingredients.map((i) => i.ingredient.trim());
-        const plainSteps = steps.map((s) => s.instruction.trim());
+        if(await supabase.auth.getUser()){
+            const plainIngredients = ingredients.map((i) => i.ingredient.trim());
+            const plainSteps = steps.map((s) => s.instruction.trim());
 
-        const { error } = await supabase.from('all_recipies').insert([
-          {
-            recipe_name: name,
-            time,
-            ingredients: plainIngredients,
-            steps: plainSteps,
-            created_at: new Date().toISOString(),
-          },
-        ]);
+            const { error } = await supabase.from('all_recipies').insert([
+              {
+                recipe_name: name,
+                time,
+                ingredients: plainIngredients,
+                steps: plainSteps,
+                created_at: new Date().toISOString(),
+              },
+            ]);
 
-        if (error) {
-          console.error('Error inserting recipe:', error.message);
-          alert('Failed to save recipe. Please try again.');
-          return;
+            if (error) {
+              console.error('Error inserting recipe:', error.message);
+              alert('Failed to save recipe. Please try again.');
+              return;
+            }
+
+            form.reset();
+            window.location.href = window.location.origin;
+          }
+          else{
+            window.location.href = loginPageUrl;
+          }
         }
 
-        form.reset();
-        window.location.href = window.location.origin;
-      };
+
+       
 
 
   return (
