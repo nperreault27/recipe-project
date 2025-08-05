@@ -25,8 +25,30 @@ const SUGGESTED_MEASUREMENTS = [
   'liters',
   'oz',
 ];
+export type Ingredient = {
+  ingredient: string;
+  quantity: string;
+  measurement: string;
+  key: string;
+};
 
-export const FieldInputIngredient = () => {
+export type Step = {
+  instruction: string;
+  key: string;
+};
+
+export type RecipeFormValues = {
+  name: string;
+  time: string;
+  ingredients: Ingredient[];
+  steps: Step[];
+};
+type FieldInputIngredientProps = {
+  form: ReturnType<typeof useForm<RecipeFormValues>>;
+};
+
+
+export const FieldInputIngredient = ({ form }: FieldInputIngredientProps) => {
   const [ingredients, setIngredients] = useState([] as string[]);
   const ingredientKeyCounter = useRef(1);
   const stepKeyCounter = useRef(1);
@@ -44,25 +66,7 @@ export const FieldInputIngredient = () => {
         );
       });
   }, []);
-  const form = useForm({
-    mode: 'uncontrolled',
-    initialValues: {
-      ingredients: [
-        {
-          ingredient: 'Flour',
-          quantity: '2',
-          measurement: 'cups',
-          key: 'initial-ingredient',
-        },
-      ],
-      steps: [
-        {
-          instruction: 'Preheat the oven to 350°F (175°C)',
-          key: 'initial-step',
-        },
-      ],
-    },
-  });
+
 
   const timeoutRef = useRef<number>(-1);
   const [loadingIndex, setLoadingIndex] = useState<number | null>(null);
