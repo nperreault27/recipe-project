@@ -40,8 +40,9 @@ export const AddRecipe = () => {
   });
 
   const handleSubmit = (values: RecipeFormValues) => {
-    console.log("Submitted Recipe:", values);
     form.reset();
+      const homeUrl = window.location.origin;
+      window.location.href = homeUrl;
   };
 
   return (
