@@ -2,6 +2,7 @@
 import { Button, TextInput, Group, Stack } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { FieldInputIngredient, Ingredient, Step } from './FieldInputIngredient'; 
+import { createClient } from '@/lib/supabase/client';
 
 type RecipeFormValues = {
   name: string;
@@ -39,11 +40,34 @@ export const AddRecipe = () => {
     },
   });
 
-  const handleSubmit = (values: RecipeFormValues) => {
-    form.reset();
-      const homeUrl = window.location.origin;
-      window.location.href = homeUrl;
-  };
+        const handleSubmit = async (values: RecipeFormValues) => {
+        const { name, ingredients, steps, time } = values;
+
+        const supabase = createClient();
+
+        const plainIngredients = ingredients.map((i) => i.ingredient.trim());
+        const plainSteps = steps.map((s) => s.instruction.trim());
+
+        const { error } = await supabase.from('all_recipies').insert([
+          {
+            recipe_name: name,
+            time,
+            ingredients: plainIngredients,
+            steps: plainSteps,
+            created_at: new Date().toISOString(),
+          },
+        ]);
+
+        if (error) {
+          console.error('Error inserting recipe:', error.message);
+          alert('Failed to save recipe. Please try again.');
+          return;
+        }
+
+        form.reset();
+        window.location.href = window.location.origin;
+      };
+
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
