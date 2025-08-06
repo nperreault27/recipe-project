@@ -13,6 +13,30 @@ type RecipeFormValues = {
 };
 const loginPageUrl = '/login';
 
+function formatIngredient(ingredient: {
+  quantity?: number | string;
+  measurement?: string;
+  ingredient: string;
+}): string {
+  const parts: string[] = [];
+
+  if (ingredient.quantity) {
+    parts.push(String(ingredient.quantity));
+  }
+
+  if (ingredient.measurement) {
+    parts.push(ingredient.measurement);
+  }
+
+  if (parts.length > 0) {
+    parts.push("of");
+  }
+
+  parts.push(ingredient.ingredient.trim());
+
+  return parts.join(" ");
+}
+
 export const AddRecipe = () => {
 
   
@@ -49,8 +73,10 @@ export const AddRecipe = () => {
 
         const supabase = createClient();
 
-        const plainIngredients = ingredients.map((i) => i.ingredient.trim());
+        const plainIngredients = ingredients.map((i) => formatIngredient(i));
+        
         const plainSteps = steps.map((s) => s.instruction.trim());
+
         const { error } = await supabase.from('all_recipies').insert([
           {
             recipe_name: name,
