@@ -3,6 +3,7 @@ import { Button, TextInput, Group, Stack } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { FieldInputIngredient, Ingredient, Step } from './FieldInputIngredient'; 
 import { createClient } from '@/lib/supabase/client';
+import { parseTimeToSeconds } from '@/app/utils/formatTime';
 
 type RecipeFormValues = {
   name: string;
@@ -13,6 +14,8 @@ type RecipeFormValues = {
 const loginPageUrl = '/login';
 
 export const AddRecipe = () => {
+
+  
   const form = useForm<RecipeFormValues>({
     initialValues: {
       name: '',
@@ -46,32 +49,26 @@ export const AddRecipe = () => {
 
         const supabase = createClient();
 
-        if(await supabase.auth.getUser()){
-            const plainIngredients = ingredients.map((i) => i.ingredient.trim());
-            const plainSteps = steps.map((s) => s.instruction.trim());
+        const plainIngredients = ingredients.map((i) => i.ingredient.trim());
+        const plainSteps = steps.map((s) => s.instruction.trim());
+        const { error } = await supabase.from('all_recipies').insert([
+          {
+            recipe_name: name,
+            time: parseTimeToSeconds(time),
+            ingredients: plainIngredients,
+            steps: plainSteps,
+          },
+        ]);
 
-            const { error } = await supabase.from('all_recipies').insert([
-              {
-                recipe_name: name,
-                time,
-                ingredients: plainIngredients,
-                steps: plainSteps,
-                created_at: new Date().toISOString(),
-              },
-            ]);
+        if (error) {
+          console.error('Error inserting recipe:', error.message);
+          alert('Failed to save recipe. Please try again.');
+          return;
+        }
 
-            if (error) {
-              console.error('Error inserting recipe:', error.message);
-              alert('Failed to save recipe. Please try again.');
-              return;
-            }
-
-            form.reset();
-            window.location.href = window.location.origin;
-          }
-          else{
-            window.location.href = loginPageUrl;
-          }
+        form.reset();
+        window.location.href = window.location.origin;
+          
         }
 
 
