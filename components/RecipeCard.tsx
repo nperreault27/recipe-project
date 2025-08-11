@@ -26,17 +26,12 @@ const RecipeCard = ({ data }: { data: Recipe }) => {
               <Text size='xl' fw={'700'}>
                 {name}
               </Text>
-              {starRating !== 0 && (
-                <Group>
-                  <Rating
-                    size={'md'}
-                    value={starRating}
-                    fractions={2}
-                    readOnly
-                  />
-                  <Text> ({Object.values(ratings).length})</Text>
-                </Group>
-              )}
+
+              <Group gap='5'>
+                <Rating size={'md'} value={starRating} fractions={2} readOnly />
+                <Text> ({Object.values(ratings).length || 0})</Text>
+              </Group>
+
               {(time && <Text>Cook Time: {time} minutes</Text>) || <br />}
             </Stack>
           </BackgroundImage>

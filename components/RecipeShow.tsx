@@ -37,7 +37,6 @@ const RecipeShow = ({ data }: { data: Recipe }) => {
     recipe_name,
     id: recipeId,
   } = data;
-
   const theme = useMantineTheme();
 
   const [opened, { open, close }] = useDisclosure(false);
@@ -89,7 +88,6 @@ const RecipeShow = ({ data }: { data: Recipe }) => {
     else {
       const newRatings = data[0].ratings;
       newRatings[userId] = value;
-      console.log(newRatings);
       const { data: updatedData, error: failedToUpdate } = await supabase
         .from('all_recipies')
         .update({ ratings: newRatings })
@@ -142,19 +140,21 @@ const RecipeShow = ({ data }: { data: Recipe }) => {
 
         <Group justify='space-between' mt='md' mb='xs'>
           <Button variant='transparent' onClick={handleModalOpen}>
-            {starRating === 0 ? (
-              <Badge
-                color={theme.colors.myYellow[3]}
+            <Group gap='5' style={{ cursor: 'pointer' }}>
+              <Rating
                 style={{ cursor: 'pointer' }}
-              >
-                Rate this Recipe
-              </Badge>
-            ) : (
-              <Group gap='5' style={{ cursor: 'pointer' }}>
-                <Rating size='md' value={starRating} fractions={2} readOnly />
-                <Text c='black'>({Object.values(updatedRatings).length})</Text>
-              </Group>
-            )}
+                size='md'
+                value={starRating}
+                fractions={2}
+                onClick={(e) => {
+                  const target = e.nativeEvent.target as HTMLInputElement;
+                  setValue(Number(target?.value) || value); //value does in fact exist here
+                }}
+              />
+              <Text c='black'>
+                ({Object.values(updatedRatings).length || 0})
+              </Text>
+            </Group>
           </Button>
           {Number(time) > 0 ? <Badge color='pink'>{timeToCook}</Badge> : <></>}
         </Group>
