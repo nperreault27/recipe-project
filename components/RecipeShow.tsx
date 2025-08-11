@@ -42,7 +42,7 @@ const RecipeShow = ({ data }: { data: Recipe }) => {
   const theme = useMantineTheme();
 
   const [opened, { open, close }] = useDisclosure(false);
-  const [user, setUser] = useState('');
+  const [userId, setUserId] = useState('');
   const [updatedRatings, updateRatings] = useState(ratings);
   const supabase = createClient();
   const starRating = getStarRating(updatedRatings);
@@ -76,8 +76,7 @@ const RecipeShow = ({ data }: { data: Recipe }) => {
     if (!currUser) {
       window.location.href = window.location.origin + '/login';
     } else {
-      setUser(currUser?.id || '');
-      console.log(user);
+      setUserId(currUser?.id || '');
       open();
     }
   };
@@ -90,18 +89,18 @@ const RecipeShow = ({ data }: { data: Recipe }) => {
     if (error) alert(error);
     else {
       const newRatings = data[0].ratings;
-      newRatings[user] = value;
+      newRatings[userId] = value;
       console.log(newRatings);
-      const { data: data2, error: error2 } = await supabase
+      const { data: updatedData, error: failedToUpdate } = await supabase
         .from('all_recipies')
         .update({ ratings: newRatings })
         .eq('id', recipeId)
         .select('ratings');
 
       close();
-      if (error2) alert(error2);
+      if (failedToUpdate) alert(failedToUpdate);
       else {
-        updateRatings(data2[0].ratings);
+        updateRatings(updatedData[0].ratings);
       }
     }
   };
@@ -143,16 +142,21 @@ const RecipeShow = ({ data }: { data: Recipe }) => {
         <Title order={1}>{recipe_name || 'Recipe'}</Title>
 
         <Group justify='space-between' mt='md' mb='xs'>
-          <UnstyledButton onClick={handleModalOpen}>
+          <Button variant='transparent' onClick={handleModalOpen}>
             {starRating === 0 ? (
-              <Badge color={theme.colors.myYellow[3]}> Rate this Recipe</Badge>
+              <Badge
+                color={theme.colors.myYellow[3]}
+                style={{ cursor: 'pointer' }}
+              >
+                Rate this Recipe
+              </Badge>
             ) : (
-              <Group gap='5'>
-                <Rating size='md' value={starRating} fractions={2} readOnly />(
-                {Object.values(ratings).length})
+              <Group gap='5' style={{ cursor: 'pointer' }}>
+                <Rating size='md' value={starRating} fractions={2} readOnly />
+                <Text c='black'>({Object.values(updatedRatings).length})</Text>
               </Group>
             )}
-          </UnstyledButton>
+          </Button>
           {Number(time) > 0 ? <Badge color='pink'>{timeToCook}</Badge> : <></>}
         </Group>
       </Group>
