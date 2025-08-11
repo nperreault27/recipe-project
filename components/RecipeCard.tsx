@@ -13,12 +13,14 @@ import Link from 'next/link';
 
 import { Recipe } from '@/app/types/index';
 import { getStarRating } from '@/app/utils/getStarRating';
+import SaveRecipeButton from './SaveRecipeButton';
 
 const RecipeCard = ({ data }: { data: Recipe }) => {
   const { image_link: imageSrc, time, ratings, recipe_name: name } = data;
   const starRating = getStarRating(ratings);
   return (
-    <Paper shadow='md' withBorder miw={275}>
+    <Paper shadow='md' withBorder miw={275} pos={'relative'}>
+      <SaveRecipeButton recipeId={data.id}/>
       <Link href={`/recipe/${data.id}/${data.recipe_name}`}>
         <AspectRatio ratio={1 / 1}>
           <BackgroundImage src={imageSrc}>
