@@ -11,7 +11,6 @@ import {
   Grid,
   Image,
   Paper,
-  UnstyledButton,
   Modal,
   Divider,
   Stack,
