@@ -6,15 +6,17 @@ import {
   Text,
   Stack,
   Rating,
+  Group,
 } from '@mantine/core';
 
 import Link from 'next/link';
 
 import { Recipe } from '@/app/types/index';
+import { getStarRating } from '@/app/utils/getStarRating';
 
 const RecipeCard = ({ data }: { data: Recipe }) => {
-  const { image_link: imageSrc, time, rating, recipe_name: name } = data;
-  const starRating = Math.round((rating || 0) * 2) / 2;
+  const { image_link: imageSrc, time, ratings, recipe_name: name } = data;
+  const starRating = getStarRating(ratings);
   return (
     <Paper shadow='md' withBorder miw={275}>
       <Link href={`/recipe/${data.id}/${data.recipe_name}`}>
@@ -24,7 +26,12 @@ const RecipeCard = ({ data }: { data: Recipe }) => {
               <Text size='xl' fw={'700'}>
                 {name}
               </Text>
-              <Rating size={'md'} value={starRating} fractions={2} readOnly />
+
+              <Group gap='5'>
+                <Rating size={'md'} value={starRating} fractions={2} readOnly />
+                <Text> ({Object.values(ratings).length || 0})</Text>
+              </Group>
+
               {(time && <Text>Cook Time: {time} minutes</Text>) || <br />}
             </Stack>
           </BackgroundImage>
