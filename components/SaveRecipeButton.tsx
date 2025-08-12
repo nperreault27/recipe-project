@@ -3,46 +3,89 @@
 import { createClient } from '@/lib/supabase/client';
 import { Button, useMantineTheme } from '@mantine/core';
 import { Bookmark, BookmarkCheck } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export const SaveRecipeButton = ({ recipeId }: { recipeId: string }) => {
   const theme = useMantineTheme();
-  const [saved, isSaved] = useState(false);
-  const [userId, setUserId] = useState('');
   const supabase = createClient();
+  const [userId, setUserId] = useState('');
+  const [isSaved, setIsSaved] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) {
+        setUserId(data.user!.id);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    if (userId) {
+      setSavedRecipes();
+    }
+  }, [userId]);
+
+  const setSavedRecipes = async () => {
+    const { data: userRecipes, error } = await supabase
+      .from('user_recipes')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (error) {
+      alert(error.message);
+    } else {
+      setIsSaved(userRecipes.saved.includes(recipeId));
+    }
+  };
 
   const handleClick = async (event: React.MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
 
-    const {
-      data: { user: currUser },
-    } = await supabase.auth.getUser();
-    if (!currUser) {
+    if (!userId) {
       window.location.href = window.location.origin + '/login';
+      return;
     } else {
-      setUserId(currUser?.id || '');
-      console.log("Current uid", currUser.id);
-        !saved ? isSaved(true) : isSaved(false);
+      if (!isSaved) {
+        setIsSaved(true);
+
+        const { data: currUserRecipes, error } = await supabase
+          .from('user_recipes')
+          .select('*')
+          .eq('id', userId)
+          .single();
+        if (error) alert(error.message);
+
+        const incrementedSavedList = currUserRecipes.saved.concat(recipeId);
+
+        const { error: failedUpdate } = await supabase
+          .from('user_recipes')
+          .update({ saved: incrementedSavedList })
+          .eq('id', userId);
+
+        if (failedUpdate) alert(failedUpdate.message);
+      } else {
+        setIsSaved(false);
+
+        const { data: currUserRecipes, error } = await supabase
+          .from('user_recipes')
+          .select('*')
+          .eq('id', userId)
+          .single();
+        if (error) alert(error.message);
+
+        const decrementedSavedList = currUserRecipes.saved.filter(
+          (idToRemove: string) => idToRemove !== recipeId
+        );
+
+        const { error: failedUpdate } = await supabase
+          .from('user_recipes')
+          .update({ saved: decrementedSavedList })
+          .eq('id', userId);
+        if (failedUpdate) alert(failedUpdate.message);
+      }
     }
-
-    const { data: savedRecipes, error: failedToSave } = await supabase
-      .from('user_recipes')
-      .update('saved')
-      .eq('id', userId)
-      .select('saved');
-
-    // const newSaved = savedRecipes;
-    // newSaved?[userId] : recipeId;
-
-    if (failedToSave) alert(failedToSave.message);
-    else {
-    }
-    //COOKED
-    console.log("Recipe ID: ", recipeId);
-    console.log("List of saved recipe IDs", savedRecipes);
-    // savedRecipes?[userId] : recipeId;
-    // console.log(savedRecipes);
   };
 
   return (
@@ -55,7 +98,7 @@ export const SaveRecipeButton = ({ recipeId }: { recipeId: string }) => {
       variant='transparent'
       onClick={handleClick}
     >
-      {!saved ? <Bookmark /> : <BookmarkCheck />}
+      {!isSaved ? <Bookmark /> : <BookmarkCheck />}
     </Button>
   );
 };
