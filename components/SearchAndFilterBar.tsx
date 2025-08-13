@@ -1,9 +1,12 @@
 import { createClient } from '@/lib/supabase/server';
 import { Autocomplete, Button, Group, Paper } from '@mantine/core';
 import { Search } from 'lucide-react';
+import SavedCheckbox from './SavedCheckbox';
 
 export const SearchAndFilterBar = async () => {
   const supabase = await createClient();
+  const { data: { user }, } = await supabase.auth.getUser();
+  const userId = user?.id;
   const ingredients = await supabase
     .from('ingredients')
     .select('*')
@@ -40,19 +43,22 @@ export const SearchAndFilterBar = async () => {
             radius={'md'}
             data={ingredients}
             w={'250'}
-            aria-label='ingrediant search'
+            aria-label='ingredient search'
             withScrollArea
             clearable
             placeholder='Search by Ingredient'
           />
-          <Button
-            type='submit'
-            color={'#ffca64'}
-            bd={'1px solid black'}
-            radius={'md'}
-          >
-            <Search />
-          </Button>
+          <Group gap={'2rem'}>
+            <SavedCheckbox userId={userId} />
+            <Button
+              type='submit'
+              color={'#ffca64'}
+              bd={'1px solid black'}
+              radius={'md'}
+            >
+              <Search />
+            </Button>
+          </Group>
         </Group>
       </form>
     </Paper>
