@@ -19,7 +19,7 @@ import {
 } from '@mantine/core';
 
 import { formatTime } from '@/app/utils/formatTime';
-
+import SaveRecipeButton from './SaveRecipeButton';
 import { Recipe } from '@/app/types/index';
 import { getStarRating } from '@/app/utils/getStarRating';
 import { useDisclosure } from '@mantine/hooks';
@@ -157,6 +157,7 @@ const RecipeShow = ({ data }: { data: Recipe }) => {
             </Group>
           </Button>
           {Number(time) > 0 ? <Badge color='pink'>{timeToCook}</Badge> : <></>}
+          <SaveRecipeButton recipeId={recipeId}/>
         </Group>
       </Group>
 
@@ -166,7 +167,7 @@ const RecipeShow = ({ data }: { data: Recipe }) => {
           {created_by || 'User'}
         </Text>
       </Group>
-
+                
       <Grid gutter={{ base: 5, xs: 'md', md: 'xl', xl: 50 }}>
         {image_link ===
         'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/300px-No_image_available.svg.png' ? (

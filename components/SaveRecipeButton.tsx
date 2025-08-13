@@ -91,10 +91,6 @@ export const SaveRecipeButton = ({ recipeId }: { recipeId: string }) => {
   return (
     <Button
       c={theme.colors.myGreen[4]}
-      pos={'absolute'}
-      top={25}
-      right={0}
-      ml={'auto'}
       variant='transparent'
       onClick={handleClick}
     >

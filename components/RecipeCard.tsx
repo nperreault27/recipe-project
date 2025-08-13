@@ -7,6 +7,7 @@ import {
   Stack,
   Rating,
   Group,
+  Box,
 } from '@mantine/core';
 
 import Link from 'next/link';
@@ -20,7 +21,9 @@ const RecipeCard = ({ data }: { data: Recipe }) => {
   const starRating = getStarRating(ratings);
   return (
     <Paper shadow='md' withBorder miw={275} pos={'relative'}>
-      <SaveRecipeButton recipeId={data.id}/>
+      <Box pos='absolute' top={25} right={5}>
+        <SaveRecipeButton recipeId={data.id} />
+      </Box>
       <Link href={`/recipe/${data.id}/${data.recipe_name}`}>
         <AspectRatio ratio={1 / 1}>
           <BackgroundImage src={imageSrc}>
