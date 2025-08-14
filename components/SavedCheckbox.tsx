@@ -8,7 +8,7 @@ const SavedCheckbox = ({ userId }: { userId: string | undefined }) => {
 
   const handleClick = () => {
     if (userId) {
-      !isChecked ? setIsChecked(true) : setIsChecked(false);
+      setIsChecked(!isChecked);
     } else {
       alert('Must be signed in to save recipes');
     }

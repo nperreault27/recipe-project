@@ -13,19 +13,21 @@ export const SaveRecipeButton = ({ recipeId }: { recipeId: string }) => {
   const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
+    const getId = async () => {
+      const { data } = await supabase.auth.getUser();
       if (data.user) {
         setUserId(data.user!.id);
       }
       setIsLoading(false);
-    });
-  }, []);
+    };
+    getId();
+  }, [supabase.auth]);
 
   useEffect(() => {
     if (userId) {
       setSavedRecipes();
     }
-  }, [userId]);
+  }, [userId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const setSavedRecipes = async () => {
     const { data: userRecipes, error } = await supabase
