@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   Group,
-  TextInput,
   Textarea,
   Button,
   Center,
@@ -10,12 +9,15 @@ import {
   Divider,
   Title,
   Stack,
-  Paper,
+  Flex,
+  useMantineTheme,
+  NumberInput,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { IconGripVertical } from '@tabler/icons-react';
 import { createClient } from '@/lib/supabase/client';
+import { Plus, Minus } from 'lucide-react';
 
 const SUGGESTED_MEASUREMENTS = [
   'tsp',
@@ -49,6 +51,7 @@ type FieldInputIngredientProps = {
 };
 
 export const FieldInputIngredient = ({ form }: FieldInputIngredientProps) => {
+  const theme = useMantineTheme();
   const [ingredients, setIngredients] = useState([] as string[]);
   const ingredientKeyCounter = useRef(1);
   const stepKeyCounter = useRef(1);
@@ -90,16 +93,7 @@ export const FieldInputIngredient = ({ form }: FieldInputIngredientProps) => {
       draggableId={`ingredient-${item.key}`}
     >
       {(provided) => (
-        <Group
-          ref={provided.innerRef}
-          mt='xs'
-          align='flex-start'
-          {...provided.draggableProps}
-        >
-          <Center {...provided.dragHandleProps} pt='xs'>
-            <IconGripVertical size={18} />
-          </Center>
-
+        <Group mt={'sm'} ref={provided.innerRef} {...provided.draggableProps}>
           <Autocomplete
             placeholder='e.g. Sugar'
             data={ingredients}
@@ -109,12 +103,20 @@ export const FieldInputIngredient = ({ form }: FieldInputIngredientProps) => {
               loadingIndex === index ? <Loader size={16} /> : undefined
             }
             w={200}
+            maxDropdownHeight={100}
+            styles={{ dropdown: { marginTop: -8 } }}
           />
 
-          <TextInput
+          <NumberInput
             placeholder='e.g. 1'
             {...form.getInputProps(`ingredients.${index}.quantity`)}
             w={80}
+            allowNegative={false}
+            hideControls={true}
+            clampBehavior={'strict'}
+            min={0}
+            decimalScale={2}
+            autoComplete='off'
           />
 
           <Autocomplete
@@ -122,7 +124,25 @@ export const FieldInputIngredient = ({ form }: FieldInputIngredientProps) => {
             data={SUGGESTED_MEASUREMENTS}
             {...form.getInputProps(`ingredients.${index}.measurement`)}
             w={100}
+            maxDropdownHeight={100}
+            styles={{ dropdown: { marginTop: -8 } }}
           />
+
+          <Group gap='xs'>
+            <Button
+              variant='subtle'
+              color='red'
+              size='xs'
+              p={4}
+              onClick={() => form.removeListItem('ingredients', index)}
+              disabled={form.values.ingredients.length <= 1}
+            >
+              <Minus size={16} />
+            </Button>
+            <Center {...provided.dragHandleProps} pt={'xs'}>
+              <IconGripVertical style={{ transform: 'translateY(-30%)'}} size={18} />
+            </Center>
+          </Group>
         </Group>
       )}
     </Draggable>
@@ -131,24 +151,30 @@ export const FieldInputIngredient = ({ form }: FieldInputIngredientProps) => {
   const stepFields = form.values.steps.map((step, index) => (
     <Draggable key={step.key} index={index} draggableId={`step-${step.key}`}>
       {(provided) => (
-        <Group
-          ref={provided.innerRef}
-          mt='xs'
-          align='flex-start'
-          {...provided.draggableProps}
-        >
-          <Center {...provided.dragHandleProps} pt='xs'>
-            <IconGripVertical size={18} />
-          </Center>
-
+        <Flex ref={provided.innerRef} mt='xs' {...provided.draggableProps}>
           <Textarea
             placeholder={`Step ${index + 1}`}
             autosize
-            minRows={2}
-            w='100%'
+            w='85%'
             {...form.getInputProps(`steps.${index}.instruction`)}
           />
-        </Group>
+          <Group gap={'xs'}>
+            <Button
+              variant='subtle'
+              color='red'
+              size='xs'
+              p={4}
+              onClick={() => form.removeListItem('steps', index)}
+              disabled={form.values.steps.length <= 1}
+            >
+              <Minus size={16} />
+            </Button>
+
+            <Center {...provided.dragHandleProps} pt='xs'>
+              <IconGripVertical style={{ transform: 'translateY(-30%)'}} size={18} />
+            </Center>
+          </Group>
+        </Flex>
       )}
     </Draggable>
   ));
@@ -170,7 +196,7 @@ export const FieldInputIngredient = ({ form }: FieldInputIngredientProps) => {
       <DragDropContext onDragEnd={handleDragEnd}>
         {/* Ingredients */}
         <Title order={4} mt='sm' mb='xs'>
-          Ingredients
+          Ingredients:
         </Title>
         <Droppable droppableId='ingredients' direction='vertical'>
           {(provided) => (
@@ -183,6 +209,7 @@ export const FieldInputIngredient = ({ form }: FieldInputIngredientProps) => {
 
         <Group justify='left' mt='sm'>
           <Button
+            bg={theme.colors.myGreen[6]}
             onClick={() =>
               form.insertListItem('ingredients', {
                 ingredient: '',
@@ -191,6 +218,7 @@ export const FieldInputIngredient = ({ form }: FieldInputIngredientProps) => {
                 key: `ingredient-${ingredientKeyCounter.current++}`,
               })
             }
+            leftSection={<Plus size={'15'} />}
           >
             Add Ingredient
           </Button>
@@ -200,8 +228,9 @@ export const FieldInputIngredient = ({ form }: FieldInputIngredientProps) => {
 
         {/* Steps */}
         <Title order={4} mb='xs'>
-          Steps
+          Steps:
         </Title>
+
         <Droppable droppableId='steps' direction='vertical'>
           {(provided) => (
             <Stack {...provided.droppableProps} ref={provided.innerRef}>
@@ -211,14 +240,16 @@ export const FieldInputIngredient = ({ form }: FieldInputIngredientProps) => {
           )}
         </Droppable>
 
-        <Group justify='left' mt='sm'>
+        <Group mt='sm'>
           <Button
+            bg={theme.colors.myGreen[6]}
             onClick={() =>
               form.insertListItem('steps', {
                 instruction: '',
                 key: `step-${stepKeyCounter.current++}`,
               })
             }
+            leftSection={<Plus size={'15'} />}
           >
             Add Step
           </Button>

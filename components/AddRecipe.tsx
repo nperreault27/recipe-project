@@ -1,9 +1,20 @@
 'use client';
-import { Button, TextInput, Group, Stack, Paper, Title } from '@mantine/core';
+
+import {
+  Button,
+  TextInput,
+  Group,
+  Stack,
+  Paper,
+  Title,
+  useMantineTheme,
+  Divider,
+} from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { FieldInputIngredient, Ingredient, Step } from './FieldInputIngredient';
 import { createClient } from '@/lib/supabase/client';
 import { parseTimeToSeconds } from '@/app/utils/formatTime';
+import { UtensilsCrossed } from 'lucide-react';
 
 type RecipeFormValues = {
   name: string;
@@ -11,7 +22,6 @@ type RecipeFormValues = {
   ingredients: Ingredient[];
   steps: Step[];
 };
-const loginPageUrl = '/login';
 
 function formatIngredient(ingredient: {
   quantity?: number | string;
@@ -38,6 +48,7 @@ function formatIngredient(ingredient: {
 }
 
 export const AddRecipe = () => {
+  const theme = useMantineTheme();
   const form = useForm<RecipeFormValues>({
     initialValues: {
       name: '',
@@ -97,7 +108,7 @@ export const AddRecipe = () => {
   return (
     <Paper radius='md' shadow='md' withBorder bg={'#EEEEEE'} p='xl'>
       <form onSubmit={form.onSubmit(handleSubmit)}>
-        <Stack>
+        <Stack gap={10}>
           <Title>Create Recipe</Title>
           <TextInput
             label='Recipe Name'
@@ -114,8 +125,12 @@ export const AddRecipe = () => {
 
           <FieldInputIngredient form={form} />
 
-          <Group align='right' mt='md'>
-            <Button type='submit'>Submit Recipe</Button>
+          <Divider mt={'lg'}/>
+
+          <Group justify='center' mt='lg'>
+            <Button bg={theme.colors.myGreen[8]} type='submit' leftSection={<UtensilsCrossed size={'20'} />}>
+               Create Recipe
+            </Button>
           </Group>
         </Stack>
       </form>
