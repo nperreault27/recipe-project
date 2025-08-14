@@ -7,6 +7,8 @@ import {
   Paper,
   Group,
   Anchor,
+  ThemeIcon,
+  useMantineTheme,
 } from '@mantine/core';
 import { Search } from 'lucide-react';
 //TODO: needs routing to direct to /search
@@ -47,7 +49,7 @@ export const SearchBar = async () => {
             </Button>
           </Group>
         </form>
-        <Anchor size='xs' underline='hover' href='/create-recipe'>
+        <Anchor size='xs' c='#3dad62' underline='hover' href='/create-recipe'>
           Create your own recipe
         </Anchor>
       </Paper>

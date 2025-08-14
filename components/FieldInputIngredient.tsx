@@ -10,6 +10,7 @@ import {
   Divider,
   Title,
   Stack,
+  Paper,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
@@ -47,7 +48,6 @@ type FieldInputIngredientProps = {
   form: ReturnType<typeof useForm<RecipeFormValues>>;
 };
 
-
 export const FieldInputIngredient = ({ form }: FieldInputIngredientProps) => {
   const [ingredients, setIngredients] = useState([] as string[]);
   const ingredientKeyCounter = useRef(1);
@@ -66,7 +66,6 @@ export const FieldInputIngredient = ({ form }: FieldInputIngredientProps) => {
         );
       });
   }, []);
-
 
   const timeoutRef = useRef<number>(-1);
   const [loadingIndex, setLoadingIndex] = useState<number | null>(null);

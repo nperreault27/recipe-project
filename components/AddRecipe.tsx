@@ -1,7 +1,7 @@
 'use client';
-import { Button, TextInput, Group, Stack } from '@mantine/core';
+import { Button, TextInput, Group, Stack, Paper, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { FieldInputIngredient, Ingredient, Step } from './FieldInputIngredient'; 
+import { FieldInputIngredient, Ingredient, Step } from './FieldInputIngredient';
 import { createClient } from '@/lib/supabase/client';
 import { parseTimeToSeconds } from '@/app/utils/formatTime';
 
@@ -29,17 +29,15 @@ function formatIngredient(ingredient: {
   }
 
   if (parts.length > 0) {
-    parts.push("of");
+    parts.push('of');
   }
 
   parts.push(ingredient.ingredient.trim());
 
-  return parts.join(" ");
+  return parts.join(' ');
 }
 
 export const AddRecipe = () => {
-
-  
   const form = useForm<RecipeFormValues>({
     initialValues: {
       name: '',
@@ -68,61 +66,59 @@ export const AddRecipe = () => {
     },
   });
 
-        const handleSubmit = async (values: RecipeFormValues) => {
-        const { name, ingredients, steps, time } = values;
+  const handleSubmit = async (values: RecipeFormValues) => {
+    const { name, ingredients, steps, time } = values;
 
-        const supabase = createClient();
+    const supabase = createClient();
 
-        const plainIngredients = ingredients.map((i) => formatIngredient(i));
-        
-        const plainSteps = steps.map((s) => s.instruction.trim());
+    const plainIngredients = ingredients.map((i) => formatIngredient(i));
 
-        const { error } = await supabase.from('all_recipies').insert([
-          {
-            recipe_name: name,
-            time: parseTimeToSeconds(time),
-            ingredients: plainIngredients,
-            steps: plainSteps,
-          },
-        ]);
+    const plainSteps = steps.map((s) => s.instruction.trim());
 
-        if (error) {
-          console.error('Error inserting recipe:', error.message);
-          alert('Failed to save recipe. Please try again.');
-          return;
-        }
+    const { error } = await supabase.from('all_recipies').insert([
+      {
+        recipe_name: name,
+        time: parseTimeToSeconds(time),
+        ingredients: plainIngredients,
+        steps: plainSteps,
+      },
+    ]);
 
-        form.reset();
-        window.location.href = window.location.origin;
-          
-        }
+    if (error) {
+      console.error('Error inserting recipe:', error.message);
+      alert('Failed to save recipe. Please try again.');
+      return;
+    }
 
-
-       
-
+    form.reset();
+    window.location.href = window.location.origin;
+  };
 
   return (
-    <form onSubmit={form.onSubmit(handleSubmit)}>
-      <Stack>
-        <TextInput
-          label='Recipe Name'
-          placeholder='e.g. Spaghetti Bolognese'
-          withAsterisk
-          {...form.getInputProps('name')}
-        />
+    <Paper radius='md' shadow='md' withBorder bg={'#EEEEEE'} p='xl'>
+      <form onSubmit={form.onSubmit(handleSubmit)}>
+        <Stack>
+          <Title>Create Recipe</Title>
+          <TextInput
+            label='Recipe Name'
+            placeholder='e.g. Spaghetti Bolognese'
+            withAsterisk
+            {...form.getInputProps('name')}
+          />
 
-        <TextInput
-          label='Time to Make'
-          placeholder='e.g. 45 minutes'
-          {...form.getInputProps('time')}
-        />
+          <TextInput
+            label='Time to Make'
+            placeholder='e.g. 45 minutes'
+            {...form.getInputProps('time')}
+          />
 
-        <FieldInputIngredient form={form} />
+          <FieldInputIngredient form={form} />
 
-        <Group align='right' mt='md'>
-          <Button type='submit'>Submit Recipe</Button>
-        </Group>
-      </Stack>
-    </form>
+          <Group align='right' mt='md'>
+            <Button type='submit'>Submit Recipe</Button>
+          </Group>
+        </Stack>
+      </form>
+    </Paper>
   );
 };
