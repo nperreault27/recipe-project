@@ -21,7 +21,7 @@ const SavedCheckbox = ({ userId }: { userId: string | undefined }) => {
       labelPosition='left'
       size='md'
       c={'#ffca64'}
-      color='#00000'
+      color={'#ffca64'}
       onChange={handleClick}
       checked={isChecked}
     />

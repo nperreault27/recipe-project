@@ -61,7 +61,10 @@ export const SaveRecipeButton = ({ recipeId }: { recipeId: string }) => {
           .select('*')
           .eq('id', userId)
           .single();
-        if (error) alert(error.message);
+        if (error) {
+          alert(error.message);
+          window.location.reload();
+        }
 
         const incrementedSavedList = currUserRecipes.saved.concat(recipeId);
 
@@ -70,7 +73,10 @@ export const SaveRecipeButton = ({ recipeId }: { recipeId: string }) => {
           .update({ saved: incrementedSavedList })
           .eq('id', userId);
 
-        if (failedUpdate) alert(failedUpdate.message);
+        if (failedUpdate) {
+          alert(failedUpdate.message);
+          return;
+        }
       } else {
         setIsSaved(false);
 
@@ -79,7 +85,10 @@ export const SaveRecipeButton = ({ recipeId }: { recipeId: string }) => {
           .select('*')
           .eq('id', userId)
           .single();
-        if (error) alert(error.message);
+        if (error) {
+          alert(error.message);
+          window.location.reload();
+        }
 
         const decrementedSavedList = currUserRecipes.saved.filter(
           (idToRemove: string) => idToRemove !== recipeId
@@ -89,7 +98,10 @@ export const SaveRecipeButton = ({ recipeId }: { recipeId: string }) => {
           .from('user_recipes')
           .update({ saved: decrementedSavedList })
           .eq('id', userId);
-        if (failedUpdate) alert(failedUpdate.message);
+        if (failedUpdate) {
+          alert(failedUpdate.message);
+          window.location.reload();
+        }
       }
     }
   };
