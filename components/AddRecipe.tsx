@@ -115,8 +115,13 @@ export const AddRecipe = () => {
           //@ts-expect-error this jawn works, just a type error
           .insert({ name: formatCapitalize(iName) });
 
-        if (insertIngredientError)
-          alert('Your ingredients failed to update in the database');
+        if (insertIngredientError) {
+          if (insertIngredientError.message.includes('duplicate key value violates unique constraint')) {
+            return;
+          } else {
+            alert(insertIngredientError.message);
+          }
+        }
       });
 
     if (error) {
