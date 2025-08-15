@@ -84,6 +84,8 @@ export const AddRecipe = () => {
 
     const plainIngredients = ingredients.map((i) => formatIngredient(i));
 
+    const ingredientNames = ingredients.map((i) => i.ingredient);
+
     const plainSteps = steps.map((s) => s.instruction.trim());
 
     const { error } = await supabase.from('all_recipies').insert([
@@ -93,7 +95,16 @@ export const AddRecipe = () => {
         ingredients: plainIngredients,
         steps: plainSteps,
       },
-    ]);
+    ]); 
+    
+
+    ingredientNames.map(async (iName) => {
+      const {error: insertIngredientError } = await supabase.from('ingredients').insert(
+        { name: iName }
+      )
+
+      if(insertIngredientError) alert(insertIngredientError.message);
+    })
 
     if (error) {
       console.error('Error inserting recipe:', error.message);
@@ -125,11 +136,15 @@ export const AddRecipe = () => {
 
           <FieldInputIngredient form={form} />
 
-          <Divider mt={'lg'}/>
+          <Divider mt={'lg'} />
 
           <Group justify='center' mt='lg'>
-            <Button bg={theme.colors.myGreen[8]} type='submit' leftSection={<UtensilsCrossed size={'20'} />}>
-               Create Recipe
+            <Button
+              bg={theme.colors.myGreen[8]}
+              type='submit'
+              leftSection={<UtensilsCrossed size={'20'} />}
+            >
+              Create Recipe
             </Button>
           </Group>
         </Stack>
