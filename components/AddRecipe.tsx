@@ -101,8 +101,8 @@ export const AddRecipe = () => {
       return;
     }
 
-    form.reset();
     window.location.href = window.location.origin;
+    form.reset();
   };
 
   return (

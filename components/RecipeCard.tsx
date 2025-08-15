@@ -11,6 +11,7 @@ import {
 import Link from 'next/link';
 
 import { Recipe } from '@/app/types/index';
+import { formatTime } from '@/app/utils/formatTime';
 
 const RecipeCard = ({ data }: { data: Recipe }) => {
   const { image_link: imageSrc, time, rating, recipe_name: name } = data;
@@ -25,7 +26,7 @@ const RecipeCard = ({ data }: { data: Recipe }) => {
                 {name}
               </Text>
               <Rating size={'md'} value={starRating} fractions={2} readOnly />
-              {(time && <Text>Cook Time: {time} minutes</Text>) || <br />}
+              {(time && <Text>Cook Time: {formatTime(time)}</Text>) || <br />}
             </Stack>
           </BackgroundImage>
         </AspectRatio>

@@ -5,7 +5,7 @@ export interface Recipe {
   ingredients: string[];
   steps: string[];
   rating: number;
-  time: string | null;
+  time: number | null;
   user_id: string | null;
   image_link: string;
   recipe_name: string;

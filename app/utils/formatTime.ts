@@ -1,7 +1,7 @@
 export function formatTime(timeInSeconds: number) {
     const hours = Math.floor(timeInSeconds / (60 * 60));
-    const minutes = timeInSeconds / 60 % 60;
-    const seconds = timeInSeconds % 60;
+    const minutes = Math.floor(timeInSeconds / 60 % 60);
+    const seconds = Math.floor(timeInSeconds % 60);
 
     let hoursFormat = '';
     if (hours !== 0) {
@@ -10,7 +10,7 @@ export function formatTime(timeInSeconds: number) {
 
     let minutesFormat = ''
     if (minutes !== 0) {
-        minutesFormat = minutes === 1 ? '1 minute' : `${minutes} minutes`;
+        minutesFormat = minutes === 1 ? '1 minute ' : `${minutes} minutes `;
     }
 
     let secondsFormat = ''
