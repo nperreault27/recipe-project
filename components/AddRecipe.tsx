@@ -56,25 +56,29 @@ export const AddRecipe = () => {
       time: '',
       ingredients: [
         {
-          ingredient: 'Flour',
-          quantity: '2',
-          measurement: 'cups',
+          ingredient: '',
+          quantity: '',
+          measurement: '',
           key: 'initial-ingredient',
         },
       ],
       steps: [
         {
-          instruction: 'Preheat the oven to 350°F (175°C)',
+          instruction: '',
           key: 'initial-step',
         },
       ],
     },
     validate: {
       name: (value) => (value.trim() === '' ? 'Recipe name is required' : null),
-      ingredients: (value) =>
-        value.length === 0 ? 'Please add at least one ingredient' : null,
+      ingredients: (list) =>
+        list.some((i) => i.ingredient.trim().length > 0)
+          ? null
+          : 'Please add at least one ingredient',
       steps: (value) =>
-        value.length === 0 ? 'Please add at least one step' : null,
+        value.some((val) => val.instruction.trim().length > 0)
+          ? null
+          : 'Please add at least one step',
     },
   });
 
@@ -83,11 +87,15 @@ export const AddRecipe = () => {
 
     const supabase = createClient();
 
-    const plainIngredients = ingredients.filter((i) => i.ingredient !== '').map((i) => formatIngredient(i));
+    const plainIngredients = ingredients
+      .filter((i) => i.ingredient !== '')
+      .map((i) => formatIngredient(i));
 
     const ingredientNames = ingredients.map((i) => i.ingredient);
 
-    const plainSteps = steps.filter((s) => s.instruction !== '').map((s) => s.instruction.trim());
+    const plainSteps = steps
+      .filter((s) => s.instruction !== '')
+      .map((s) => s.instruction.trim());
 
     const { error } = await supabase.from('all_recipies').insert([
       {
@@ -97,13 +105,14 @@ export const AddRecipe = () => {
         steps: plainSteps,
       },
     ]);
-    
 
-    ingredientNames.filter((iName) => iName.length !== 0).map(async (iName) => {
-      const {error: insertIngredientError } = await supabase.from('ingredients').insert(
-        { name: formatCapitalize(iName) }
-      )
-    })
+    ingredientNames
+      .filter((iName) => iName.length !== 0)
+      .map(async (iName) => {
+        const { error: insertIngredientError } = await supabase
+          .from('ingredients')
+          .insert({ name: formatCapitalize(iName) });
+      });
 
     if (error) {
       console.error('Error inserting recipe:', error.message);
