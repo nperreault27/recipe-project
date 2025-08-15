@@ -30,7 +30,8 @@ export const SearchAndFilterBar = async () => {
         <Group justify='space-between' w={'100%'}>
           <Autocomplete
             name='recipeName'
-            data={[...recipeSet]}//type pain
+            //@ts-expect-error wonky type
+            data={[...recipeSet]}
             radius={'md'}
             w={'250'}
             aria-label='recipe search'

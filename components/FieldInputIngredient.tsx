@@ -14,7 +14,7 @@ import {
   NumberInput,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { IconGripVertical } from '@tabler/icons-react';
 import { createClient } from '@/lib/supabase/client';
 import { Plus, Minus } from 'lucide-react';
@@ -179,7 +179,7 @@ export const FieldInputIngredient = ({ form }: FieldInputIngredientProps) => {
     </Draggable>
   ));
 
-  const handleDragEnd = ({ destination, source }: any) => {
+  const handleDragEnd = ({ destination, source }: DropResult) => {
     if (!destination) return;
 
     const isIngredients = source.droppableId === 'ingredients';

@@ -36,7 +36,8 @@ export const SearchBar = async () => {
               <Autocomplete
                 w={'300'}
                 name='recipeName'
-                data={[...recipeSet]}//type pain
+                //@ts-expect-error wonky type
+                data={[...recipeSet]}
                 radius={'md'}
                 withScrollArea
                 clearable

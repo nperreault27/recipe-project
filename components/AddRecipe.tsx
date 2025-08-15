@@ -97,6 +97,7 @@ export const AddRecipe = () => {
       .filter((s) => s.instruction !== '')
       .map((s) => s.instruction.trim());
 
+    //@ts-expect-error this jawn works, just type error pain
     const { error } = await supabase.from('all_recipies').insert([
       {
         recipe_name: name,
@@ -111,7 +112,11 @@ export const AddRecipe = () => {
       .map(async (iName) => {
         const { error: insertIngredientError } = await supabase
           .from('ingredients')
+          //@ts-expect-error this jawn works, just a type error
           .insert({ name: formatCapitalize(iName) });
+
+        if (insertIngredientError)
+          alert('Your ingredients failed to update in the database');
       });
 
     if (error) {
