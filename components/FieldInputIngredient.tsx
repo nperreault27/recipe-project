@@ -14,10 +14,14 @@ import {
   NumberInput,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { IconGripVertical } from '@tabler/icons-react';
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+} from '@hello-pangea/dnd';
 import { createClient } from '@/lib/supabase/client';
-import { Plus, Minus } from 'lucide-react';
+import { Plus, Minus, GripVertical } from 'lucide-react';
 
 const SUGGESTED_MEASUREMENTS = [
   'tsp',
@@ -140,7 +144,10 @@ export const FieldInputIngredient = ({ form }: FieldInputIngredientProps) => {
               <Minus size={16} />
             </Button>
             <Center {...provided.dragHandleProps} pt={'xs'}>
-              <IconGripVertical style={{ transform: 'translateY(-30%)'}} size={18} />
+              <GripVertical
+                style={{ transform: 'translateY(-30%)' }}
+                size={18}
+              />
             </Center>
           </Group>
         </Group>
@@ -171,7 +178,10 @@ export const FieldInputIngredient = ({ form }: FieldInputIngredientProps) => {
             </Button>
 
             <Center {...provided.dragHandleProps} pt='xs'>
-              <IconGripVertical style={{ transform: 'translateY(-30%)'}} size={18} />
+              <GripVertical
+                style={{ transform: 'translateY(-30%)' }}
+                size={18}
+              />
             </Center>
           </Group>
         </Flex>
@@ -194,7 +204,6 @@ export const FieldInputIngredient = ({ form }: FieldInputIngredientProps) => {
   return (
     <div>
       <DragDropContext onDragEnd={handleDragEnd}>
-        {/* Ingredients */}
         <Title order={4} mt='sm' mb='xs'>
           Ingredients:
         </Title>
@@ -226,7 +235,6 @@ export const FieldInputIngredient = ({ form }: FieldInputIngredientProps) => {
 
         <Divider my='lg' />
 
-        {/* Steps */}
         <Title order={4} mb='xs'>
           Steps:
         </Title>

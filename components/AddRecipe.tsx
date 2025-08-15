@@ -97,7 +97,7 @@ export const AddRecipe = () => {
       .filter((s) => s.instruction !== '')
       .map((s) => s.instruction.trim());
 
-    //@ts-expect-error this jawn works, just type error pain
+    //@ts-expect-error linting issue with using any type since the fields from table are not partial
     const { error } = await supabase.from('all_recipies').insert([
       {
         recipe_name: name,
@@ -113,10 +113,14 @@ export const AddRecipe = () => {
         const { error: insertIngredientError } = await supabase
           .from('ingredients')
           //@ts-expect-error this jawn works, just a type error
-          .insert({ name: formatCapitalize(iName) });
+          .insert(formatCapitalize(iName));
 
         if (insertIngredientError) {
-          if (insertIngredientError.message.includes('duplicate key value violates unique constraint')) {
+          if (
+            insertIngredientError.message.includes(
+              'duplicate key value violates unique constraint'
+            )
+          ) {
             return;
           } else {
             alert(insertIngredientError.message);

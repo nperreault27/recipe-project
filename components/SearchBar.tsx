@@ -9,7 +9,7 @@ import {
   Title,
 } from '@mantine/core';
 import { Search, CirclePlus } from 'lucide-react';
-//TODO: needs routing to direct to /search
+
 export const SearchBar = async () => {
   const supabase = await createClient();
   const recipeNames = await supabase
@@ -21,8 +21,7 @@ export const SearchBar = async () => {
         : [];
     });
 
-  const recipeSet = new Set();
-  recipeNames.map((rName) => recipeSet.add(rName));
+  const filteredRecipes = [...new Set(recipeNames)];
 
   return (
     <Stack h={'100%'} align={'center'} justify={'center'} gap={'md'}>
@@ -36,8 +35,7 @@ export const SearchBar = async () => {
               <Autocomplete
                 w={'300'}
                 name='recipeName'
-                //@ts-expect-error wonky type
-                data={[...recipeSet]}
+                data={filteredRecipes}
                 radius={'md'}
                 withScrollArea
                 clearable
@@ -55,7 +53,6 @@ export const SearchBar = async () => {
             </Group>
           </form>
           <Anchor size='sm' c='#3dad62' underline='hover' href='/create-recipe'>
-            {/*I have OCD*/}
             <Group
               gap='5'
               align='center'

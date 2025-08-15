@@ -21,8 +21,7 @@ export const SearchAndFilterBar = async () => {
         : [];
     });
 
-  const recipeSet = new Set();
-  recipeNames.map((rName) => recipeSet.add(rName));
+  const filteredRecipes = [...new Set(recipeNames)];
 
   return (
     <Paper w={'100%'} withBorder shadow='md' p={'md'}>
@@ -30,8 +29,7 @@ export const SearchAndFilterBar = async () => {
         <Group justify='space-between' w={'100%'}>
           <Autocomplete
             name='recipeName'
-            //@ts-expect-error wonky type
-            data={[...recipeSet]}
+            data={filteredRecipes}
             radius={'md'}
             w={'250'}
             aria-label='recipe search'
