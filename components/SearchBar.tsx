@@ -6,7 +6,6 @@ import {
   Paper,
   Group,
   Anchor,
-  Text,
   Title,
 } from '@mantine/core';
 import { Search, CirclePlus } from 'lucide-react';
@@ -21,6 +20,10 @@ export const SearchBar = async () => {
         ? result.data!.map((recipe) => recipe.recipe_name)
         : [];
     });
+
+  const recipeSet = new Set();
+  recipeNames.map((rName) => recipeSet.add(rName));
+
   return (
     <Stack h={'100%'} align={'center'} justify={'center'} gap={'md'}>
       <Paper shadow='md' withBorder p={'md'}>
@@ -33,11 +36,12 @@ export const SearchBar = async () => {
               <Autocomplete
                 w={'300'}
                 name='recipeName'
-                data={recipeNames}
+                data={[...recipeSet]}//type pain
                 radius={'md'}
                 withScrollArea
                 clearable
                 placeholder='What do you want to make today?'
+                maxDropdownHeight={165}
               />
               <Button
                 type='submit'

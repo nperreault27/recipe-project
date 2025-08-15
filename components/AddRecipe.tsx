@@ -15,6 +15,7 @@ import { FieldInputIngredient, Ingredient, Step } from './FieldInputIngredient';
 import { createClient } from '@/lib/supabase/client';
 import { parseTimeToSeconds } from '@/app/utils/formatTime';
 import { UtensilsCrossed } from 'lucide-react';
+import { formatCapitalize } from '@/app/utils/formatCapitalize';
 
 type RecipeFormValues = {
   name: string;
@@ -82,11 +83,11 @@ export const AddRecipe = () => {
 
     const supabase = createClient();
 
-    const plainIngredients = ingredients.map((i) => formatIngredient(i));
+    const plainIngredients = ingredients.filter((i) => i.ingredient !== '').map((i) => formatIngredient(i));
 
     const ingredientNames = ingredients.map((i) => i.ingredient);
 
-    const plainSteps = steps.map((s) => s.instruction.trim());
+    const plainSteps = steps.filter((s) => s.instruction !== '').map((s) => s.instruction.trim());
 
     const { error } = await supabase.from('all_recipies').insert([
       {
@@ -95,15 +96,13 @@ export const AddRecipe = () => {
         ingredients: plainIngredients,
         steps: plainSteps,
       },
-    ]); 
+    ]);
     
 
-    ingredientNames.map(async (iName) => {
+    ingredientNames.filter((iName) => iName.length !== 0).map(async (iName) => {
       const {error: insertIngredientError } = await supabase.from('ingredients').insert(
-        { name: iName }
+        { name: formatCapitalize(iName) }
       )
-
-      if(insertIngredientError) alert(insertIngredientError.message);
     })
 
     if (error) {
@@ -120,7 +119,7 @@ export const AddRecipe = () => {
     <Paper radius='md' shadow='md' withBorder bg={'#EEEEEE'} p='xl'>
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Stack gap={10}>
-          <Title>Create Recipe</Title>
+          <Title mb={10}>Create Recipe</Title>
           <TextInput
             label='Recipe Name'
             placeholder='e.g. Spaghetti Bolognese'

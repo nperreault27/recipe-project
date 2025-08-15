@@ -21,13 +21,16 @@ export const SearchAndFilterBar = async () => {
         : [];
     });
 
+  const recipeSet = new Set();
+  recipeNames.map((rName) => recipeSet.add(rName));
+
   return (
     <Paper w={'100%'} withBorder shadow='md' p={'md'}>
       <form>
         <Group justify='space-between' w={'100%'}>
           <Autocomplete
             name='recipeName'
-            data={recipeNames}
+            data={[...recipeSet]}//type pain
             radius={'md'}
             w={'250'}
             aria-label='recipe search'
