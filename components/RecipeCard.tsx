@@ -6,18 +6,25 @@ import {
   Text,
   Stack,
   Rating,
+  Group,
+  Box,
 } from '@mantine/core';
 
 import Link from 'next/link';
 
 import { Recipe } from '@/app/types/index';
+import { getStarRating } from '@/app/utils/getStarRating';
+import SaveRecipeButton from './SaveRecipeButton';
 import { formatTime } from '@/app/utils/formatTime';
 
 const RecipeCard = ({ data }: { data: Recipe }) => {
-  const { image_link: imageSrc, time, rating, recipe_name: name } = data;
-  const starRating = Math.round((rating || 0) * 2) / 2;
+  const { image_link: imageSrc, time, ratings, recipe_name: name } = data;
+  const starRating = getStarRating(ratings);
   return (
-    <Paper shadow='md' withBorder miw={275}>
+    <Paper shadow='md' withBorder miw={275} pos={'relative'}>
+      <Box pos='absolute' top={25} right={5}>
+        <SaveRecipeButton recipeId={data.id} />
+      </Box>
       <Link href={`/recipe/${data.id}/${data.recipe_name}`}>
         <AspectRatio ratio={1 / 1}>
           <BackgroundImage src={imageSrc}>
@@ -25,7 +32,12 @@ const RecipeCard = ({ data }: { data: Recipe }) => {
               <Text size='xl' fw={'700'}>
                 {name}
               </Text>
-              <Rating size={'md'} value={starRating} fractions={2} readOnly />
+
+              <Group gap='5'>
+                <Rating size={'md'} value={starRating} fractions={2} readOnly />
+                <Text> ({Object.values(ratings).length || 0})</Text>
+              </Group>
+
               {(time && <Text>Cook Time: {formatTime(time)}</Text>) || <br />}
             </Stack>
           </BackgroundImage>

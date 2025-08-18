@@ -4,9 +4,9 @@ export interface Recipe {
   created_by: string;
   ingredients: string[];
   steps: string[];
-  rating: number;
+  ratings: { string: number };
   time: number | null;
   user_id: string | null;
   image_link: string;
   recipe_name: string;
-};
+}
