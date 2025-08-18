@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 
 import RecipeShow from '@/components/RecipeShow';
 import NotFound from '@/components/NotFound';
+import { Recipe } from '@/app/types';
 
 const GetRecipeShow = async ({
   params,
@@ -11,10 +12,11 @@ const GetRecipeShow = async ({
   const { id, slug: name } = await params;
 
   const supabase = await createClient();
-  const { data: detailedRecipeData, error } = await supabase
+  const { data: detailedRecipeData, error } = (await supabase
     .from('all_recipies')
     .select('*')
-    .eq('id', id);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .eq('id', id)) as { data: Recipe[]; error: any };
 
   if (error)
     return (
