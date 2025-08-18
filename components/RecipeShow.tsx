@@ -11,11 +11,14 @@ import {
   Grid,
   Image,
   Paper,
+  Button,
 } from '@mantine/core';
 
+import { useState } from 'react'
 import { formatTime } from '@/app/utils/formatTime';
 
 import { Recipe } from '@/app/types/index';
+import { createClient } from '@/lib/supabase/client';
 
 const RecipeShow = ({ data }: { data: Recipe }) => {
   const {
@@ -27,6 +30,7 @@ const RecipeShow = ({ data }: { data: Recipe }) => {
     image_link,
     recipe_name,
   } = data;
+
 
   const starRating = Math.round((rating || 0) * 2) / 2;
   const timeToCook = formatTime(Number(time));
@@ -50,6 +54,50 @@ const RecipeShow = ({ data }: { data: Recipe }) => {
         </List.Item>
       );
     });
+
+const handleSaveRecipe = async () => {
+  const supabase = createClient();
+  const user = (await supabase.auth.getUser()).data.user;
+
+  if (!user) {
+    alert("User not authenticated.");
+    return;
+  }
+
+  const userId = user.id;
+
+  const { data: existingData, error: fetchError } = await supabase
+    .from('user_recipes')
+    .select('saved')
+    .eq('id', userId)
+    .single();
+
+  if (fetchError) {
+    console.log('Error fetching existing saved recipes:', fetchError);
+    alert('Failed to fetch saved recipes. Please try again.');
+    return;
+  }
+
+  const updatedSaved = existingData?.saved?.includes(data.id)
+    ? existingData.saved
+    : [...existingData.saved, data.id];
+
+  const { error: updateError } = await supabase
+    .from('user_recipes')
+    .update({ saved: updatedSaved })
+    .eq('id', userId);
+
+  if (updateError) {
+    console.log('Error updating saved recipes:', updateError);
+    alert('Failed to save recipe. Please try again.');
+    return;
+  }
+
+  console.log('Recipe saved successfully!');
+  
+  alert("Recipe Saved!")
+};
+
 
   return (
     <>
@@ -109,6 +157,9 @@ const RecipeShow = ({ data }: { data: Recipe }) => {
           </List>
         </Grid.Col>
       </Grid>
+      <Button onClick={handleSaveRecipe}>
+        Save Recipe
+      </Button>
     </>
   );
 };
