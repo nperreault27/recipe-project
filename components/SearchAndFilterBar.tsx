@@ -24,13 +24,15 @@ export const SearchAndFilterBar = async () => {
         : [];
     });
 
+  const filteredRecipes = [...new Set(recipeNames)];
+
   return (
     <Paper w={'100%'} withBorder shadow='md' p={'md'}>
       <form>
         <Group justify='space-between' w={'100%'}>
           <Autocomplete
             name='recipeName'
-            data={recipeNames}
+            data={filteredRecipes}
             radius={'md'}
             w={'250'}
             aria-label='recipe search'

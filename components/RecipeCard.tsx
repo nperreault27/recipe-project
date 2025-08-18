@@ -15,6 +15,7 @@ import Link from 'next/link';
 import { Recipe } from '@/app/types/index';
 import { getStarRating } from '@/app/utils/getStarRating';
 import SaveRecipeButton from './SaveRecipeButton';
+import { formatTime } from '@/app/utils/formatTime';
 
 const RecipeCard = ({ data }: { data: Recipe }) => {
   const { image_link: imageSrc, time, ratings, recipe_name: name } = data;
@@ -37,7 +38,7 @@ const RecipeCard = ({ data }: { data: Recipe }) => {
                 <Text> ({Object.values(ratings).length || 0})</Text>
               </Group>
 
-              {(time && <Text>Cook Time: {time} minutes</Text>) || <br />}
+              {(time && <Text>Cook Time: {formatTime(time)}</Text>) || <br />}
             </Stack>
           </BackgroundImage>
         </AspectRatio>
