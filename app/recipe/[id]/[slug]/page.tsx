@@ -11,7 +11,6 @@ const GetRecipeShow = async ({
   const { id, slug: name } = await params;
 
   const supabase = await createClient();
-  //@ts-expect-error this jawn works, just a type error
   const { data: detailedRecipeData, error } = await supabase
     .from('all_recipies')
     .select('*')
