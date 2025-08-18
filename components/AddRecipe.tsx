@@ -97,7 +97,6 @@ export const AddRecipe = () => {
       .filter((s) => s.instruction !== '')
       .map((s) => s.instruction.trim());
 
-    //@ts-expect-error linting issue with using any type since the fields from table are not partial
     const { error } = await supabase.from('all_recipies').insert([
       {
         recipe_name: name,
@@ -112,7 +111,6 @@ export const AddRecipe = () => {
       .map(async (iName) => {
         const { error: insertIngredientError } = await supabase
           .from('ingredients')
-          //@ts-expect-error this jawn works, just a type error
           .insert(formatCapitalize(iName));
 
         if (insertIngredientError) {
