@@ -94,7 +94,8 @@ const handleSaveRecipe = async () => {
   }
 
   console.log('Recipe saved successfully!');
-  
+  window.location.href = window.location.origin;
+
   alert("Recipe Saved!")
 };
 
