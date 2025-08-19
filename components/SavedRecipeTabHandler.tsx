@@ -1,5 +1,5 @@
 'use client'
 export default function SavedRecipeTabHandler(){
-    window.location.href = "./saved-recipe"
-
+  const origin = window.location.origin;
+    window.location.href = `${origin}/saved-recipe`;
 }
