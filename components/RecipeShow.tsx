@@ -14,7 +14,6 @@ import {
   Button,
 } from '@mantine/core';
 
-import { useState } from 'react'
 import { formatTime } from '@/app/utils/formatTime';
 
 import { Recipe } from '@/app/types/index';
@@ -84,7 +83,7 @@ const handleSaveRecipe = async () => {
 
   const { error: updateError } = await supabase
     .from('user_recipes')
-    .update({ saved: updatedSaved })
+    .update({ saved: updatedSaved})
     .eq('id', userId);
 
   if (updateError) {
@@ -158,6 +157,7 @@ const handleSaveRecipe = async () => {
           </List>
         </Grid.Col>
       </Grid>
+      
       <Button onClick={handleSaveRecipe}>
         Save Recipe
       </Button>
