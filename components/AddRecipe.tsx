@@ -16,6 +16,7 @@ import { createClient } from '@/lib/supabase/client';
 import { parseTimeToSeconds } from '@/app/utils/formatTime';
 import { UtensilsCrossed } from 'lucide-react';
 import { formatCapitalize } from '@/app/utils/formatCapitalize';
+import { Recipe } from '@/app/types/index';
 
 type RecipeFormValues = {
   name: string;
@@ -48,26 +49,56 @@ function formatIngredient(ingredient: {
   return parts.join(' ');
 }
 
-export const AddRecipe = () => {
+export const AddRecipe = ({
+  initialRecipe,
+  isEditMode = false,
+}: {
+  initialRecipe?: Recipe;
+  isEditMode?: boolean;
+}) => {
   const theme = useMantineTheme();
   const form = useForm<RecipeFormValues>({
     initialValues: {
-      name: '',
-      time: '',
-      ingredients: [
-        {
-          ingredient: '',
-          quantity: '',
-          measurement: '',
-          key: 'initial-ingredient',
-        },
-      ],
-      steps: [
-        {
-          instruction: '',
-          key: 'initial-step',
-        },
-      ],
+      name: initialRecipe ? initialRecipe.recipe_name : '',
+      time: initialRecipe && initialRecipe.time ? initialRecipe.time.toString() : '',
+      ingredients: initialRecipe
+        ? initialRecipe.ingredients.map((ingredientStr, index) => {
+            const regex = /^(\d+(?:\.\d+)?)?\s*(\w+)?\s*of\s*(.+)$/i;
+            const match = regex.exec(ingredientStr.trim());
+            let quantity = '', measurement = '', ingredient = '';
+            if (match) {
+              quantity = match[1] || '';
+              measurement = match[2] || '';
+              ingredient = match[3] || '';
+            } else {
+              ingredient = ingredientStr;
+            }
+            return {
+              ingredient,
+              quantity,
+              measurement,
+              key: `ingredient-${index}`,
+            };
+          })
+        : [
+            {
+              ingredient: '',
+              quantity: '',
+              measurement: '',
+              key: 'initial-ingredient',
+            },
+          ],
+      steps: initialRecipe
+        ? initialRecipe.steps.map((instruction, index) => ({
+            instruction,
+            key: `step-${index}`,
+          }))
+        : [
+            {
+              instruction: '',
+              key: 'initial-step',
+            },
+          ],
     },
     validate: {
       name: (value) => (value.trim() === '' ? 'Recipe name is required' : null),
@@ -84,27 +115,38 @@ export const AddRecipe = () => {
 
   const handleSubmit = async (values: RecipeFormValues) => {
     const { name, ingredients, steps, time } = values;
-
     const supabase = createClient();
-
     const plainIngredients = ingredients
       .filter((i) => i.ingredient !== '')
       .map((i) => formatIngredient(i));
-
     const ingredientNames = ingredients.map((i) => i.ingredient);
-
     const plainSteps = steps
       .filter((s) => s.instruction !== '')
       .map((s) => s.instruction.trim());
 
-    const { error } = await supabase.from('all_recipies').insert([
-      {
-        recipe_name: name,
-        time: parseTimeToSeconds(time),
-        ingredients: plainIngredients,
-        steps: plainSteps,
-      },
-    ]);
+    let error;
+    if (isEditMode && initialRecipe) {
+      const { error: updateError } = await supabase
+        .from('all_recipies')
+        .update({
+          recipe_name: name,
+          time: parseTimeToSeconds(time),
+          ingredients: plainIngredients,
+          steps: plainSteps,
+        })
+        .eq('id', initialRecipe.id);
+      error = updateError;
+    } else {
+      const { error: insertError } = await supabase.from('all_recipies').insert([
+        {
+          recipe_name: name,
+          time: parseTimeToSeconds(time),
+          ingredients: plainIngredients,
+          steps: plainSteps,
+        },
+      ]);
+      error = insertError;
+    }
 
     ingredientNames
       .filter((iName) => iName.length !== 0)
@@ -112,7 +154,6 @@ export const AddRecipe = () => {
         const { error: insertIngredientError } = await supabase
           .from('ingredients')
           .insert(formatCapitalize(iName));
-
         if (insertIngredientError) {
           if (
             insertIngredientError.message.includes(
@@ -127,7 +168,6 @@ export const AddRecipe = () => {
       });
 
     if (error) {
-      console.error('Error inserting recipe:', error.message);
       alert('Failed to save recipe. Please try again.');
       return;
     }
@@ -136,21 +176,40 @@ export const AddRecipe = () => {
     form.reset();
   };
 
+  const handleDelete = async () => {
+    if (!initialRecipe) return;
+
+    const confirmed = confirm('Are you sure you want to delete this recipe?');
+    if (!confirmed) return;
+
+    const supabase = createClient();
+    const { error } = await supabase
+      .from('all_recipies')
+      .delete()
+      .eq('id', initialRecipe.id);
+
+    if (error) {
+      alert('Error deleting recipe: ' + error.message);
+    } else {
+      window.location.href = window.location.origin;
+    }
+  };
+
   return (
     <Paper radius='md' shadow='md' withBorder bg={'#EEEEEE'} p='xl'>
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Stack gap={10}>
-          <Title mb={10}>Create Recipe</Title>
+          <Title mb={10}>{isEditMode ? 'Edit Recipe' : 'Create Recipe'}</Title>
           <TextInput
-            label='Recipe Name'
-            placeholder='e.g. Spaghetti Bolognese'
+            label={isEditMode ? 'Edit Recipe Name' : 'Recipe Name'}
+            placeholder={isEditMode ? 'Edit the name...' : 'e.g. Spaghetti Bolognese'}
             withAsterisk
             {...form.getInputProps('name')}
           />
 
           <TextInput
-            label='Time to Make'
-            placeholder='e.g. 45 minutes'
+            label={isEditMode ? 'Edit Time to Make' : 'Time to Make'}
+            placeholder={isEditMode ? 'Edit the time...' : 'e.g. 45 minutes'}
             {...form.getInputProps('time')}
           />
 
@@ -164,8 +223,13 @@ export const AddRecipe = () => {
               type='submit'
               leftSection={<UtensilsCrossed size={'20'} />}
             >
-              Create Recipe
+              {isEditMode ? 'Update Recipe' : 'Create Recipe'}
             </Button>
+            {isEditMode && (
+              <Button color='red' onClick={handleDelete} ml={10}>
+                Delete Recipe
+              </Button>
+            )}
           </Group>
         </Stack>
       </form>
