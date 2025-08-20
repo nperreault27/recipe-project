@@ -13,6 +13,8 @@ import {
   Paper,
   Button,
 } from '@mantine/core';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 import { formatTime } from '@/app/utils/formatTime';
 
@@ -30,6 +32,8 @@ const RecipeShow = ({ data }: { data: Recipe }) => {
     recipe_name,
   } = data;
 
+  const [isOwner, setIsOwner] = useState(false);
+  const router = useRouter();
 
   const starRating = Math.round((rating || 0) * 2) / 2;
   const timeToCook = formatTime(Number(time));
@@ -54,50 +58,64 @@ const RecipeShow = ({ data }: { data: Recipe }) => {
       );
     });
 
-const handleSaveRecipe = async () => {
-  const supabase = createClient();
-  const user = (await supabase.auth.getUser()).data.user;
+  useEffect(() => {
+    const checkOwner = async () => {
+      const supabase = createClient();
+      const user = (await supabase.auth.getUser()).data.user;
+      if (user && user.id === data.user_id) {
+        setIsOwner(true);
+      }
+    };
+    checkOwner();
+  }, [data.user_id]);
 
-  if (!user) {
-    alert("User not authenticated.");
-    return;
-  }
+  const handleSaveRecipe = async () => {
+    const supabase = createClient();
+    const user = (await supabase.auth.getUser()).data.user;
 
-  const userId = user.id;
+    if (!user) {
+      alert('User not authenticated.');
+      return;
+    }
 
-  const { data: existingData, error: fetchError } = await supabase
-    .from('user_recipes')
-    .select('saved')
-    .eq('id', userId)
-    .single();
+    const userId = user.id;
 
-  if (fetchError) {
-    console.log('Error fetching existing saved recipes:', fetchError);
-    alert('Failed to fetch saved recipes. Please try again.');
-    return;
-  }
+    const { data: existingData, error: fetchError } = await supabase
+      .from('user_recipes')
+      .select('saved')
+      .eq('id', userId)
+      .single();
 
-  const updatedSaved = existingData?.saved?.includes(data.id)
-    ? existingData.saved
-    : [...existingData.saved, data.id];
+    if (fetchError) {
+      console.log('Error fetching existing saved recipes:', fetchError);
+      alert('Failed to fetch saved recipes. Please try again.');
+      return;
+    }
 
-  const { error: updateError } = await supabase
-    .from('user_recipes')
-    .update({ saved: updatedSaved})
-    .eq('id', userId);
+    const updatedSaved = existingData?.saved?.includes(data.id)
+      ? existingData.saved
+      : [...existingData.saved, data.id];
 
-  if (updateError) {
-    console.log('Error updating saved recipes:', updateError);
-    alert('Failed to save recipe. Please try again.');
-    return;
-  }
+    const { error: updateError } = await supabase
+      .from('user_recipes')
+      .update({ saved: updatedSaved })
+      .eq('id', userId);
 
-  console.log('Recipe saved successfully!');
-  window.location.href = window.location.origin;
+    if (updateError) {
+      console.log('Error updating saved recipes:', updateError);
+      alert('Failed to save recipe. Please try again.');
+      return;
+    }
 
-  alert("Recipe Saved!")
-};
+    console.log('Recipe saved successfully!');
+    window.location.href = window.location.origin;
 
+    alert('Recipe Saved!');
+  };
+
+  const handleEditRecipe = () => {
+    router.push(`/recipe/${data.id}/${data.recipe_name}/edit`);
+  };
 
   return (
     <>
@@ -157,10 +175,20 @@ const handleSaveRecipe = async () => {
           </List>
         </Grid.Col>
       </Grid>
-      
-      <Button onClick={handleSaveRecipe}>
-        Save Recipe
-      </Button>
+      <Grid gutter={{ base: 15, md: 6, lg: 10 }}>
+        <Grid.Col mt='lg' span={12}>
+          <List size='lg' listStyleType='none' pt='5px'>
+            <List.Item mb='sm'>
+              <Button onClick={handleSaveRecipe}>Save Recipe</Button>
+            </List.Item>
+            {isOwner && (
+              <List.Item>
+                <Button onClick={handleEditRecipe}>Edit Recipe</Button>
+              </List.Item>
+            )}
+          </List>
+        </Grid.Col>
+      </Grid>
     </>
   );
 };
