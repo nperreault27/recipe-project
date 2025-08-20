@@ -63,7 +63,6 @@ export const AddRecipe = ({
       time: initialRecipe && initialRecipe.time ? initialRecipe.time.toString() : '',
       ingredients: initialRecipe
         ? initialRecipe.ingredients.map((ingredientStr, index) => {
-            // Parse ingredient string like "2 tbsp of sugar"
             const regex = /^(\d+(?:\.\d+)?)?\s*(\w+)?\s*of\s*(.+)$/i;
             const match = regex.exec(ingredientStr.trim());
             let quantity = '', measurement = '', ingredient = '';
@@ -127,7 +126,6 @@ export const AddRecipe = ({
 
     let error;
     if (isEditMode && initialRecipe) {
-      // Update existing recipe
       try {
         const { error: updateError } = await supabase
           .from('all_recipies')
@@ -140,11 +138,11 @@ export const AddRecipe = ({
           .eq('id', initialRecipe.id);
         error = updateError;
       } catch (err) {
+        console.error('Network or unexpected error:', err);
         alert('Network or unexpected error: ' + (err && typeof err === 'object' && 'message' in err ? (err as any).message : String(err)));
         return;
       }
     } else {
-      // Create new recipe
       const { error: insertError } = await supabase.from('all_recipies').insert([
         {
           recipe_name: name,
@@ -181,11 +179,10 @@ export const AddRecipe = ({
       return;
     }
 
-    //window.location.href = window.location.origin;
+    window.location.href = window.location.origin;
     form.reset();
   };
 
-  // Delete recipe handler
   const handleDelete = async () => {
     if (!isEditMode || !initialRecipe) return;
     const supabase = createClient();
