@@ -17,7 +17,8 @@ import {
   Button,
   useMantineTheme,
 } from '@mantine/core';
-import { Pencil, Trash2 } from 'lucide-react';
+
+import { SquarePen, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 import { formatTime } from '@/app/utils/formatTime';
@@ -165,17 +166,17 @@ const RecipeShow = ({ data }: { data: Recipe }) => {
         </Stack>
       </Modal>
       <Group justify='space-between' mt='md' mb='xs'>
-        <Title order={1}>
+        <Title order={1} >
           {recipe_name || 'Recipe'}
           {currentUserId === data.user_id && currentUserId && (
             <Button
               variant='subtle'
               size='sm'
               ml={10}
+              mb={5}
               onClick={handleEdit}
-              style={{ verticalAlign: 'middle' }}
             >
-              <Pencil size={18} />
+              <SquarePen size={24} />
             </Button>
           )}
         </Title>
