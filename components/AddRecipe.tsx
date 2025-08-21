@@ -17,6 +17,7 @@ import { parseTimeToSeconds } from '@/app/utils/formatTime';
 import { UtensilsCrossed } from 'lucide-react';
 import { formatCapitalize } from '@/app/utils/formatCapitalize';
 import { Recipe } from '@/app/types/index';
+import {formatTime} from "@/app/utils/formatTime";
 
 type RecipeFormValues = {
   name: string;
@@ -60,7 +61,7 @@ export const AddRecipe = ({
   const form = useForm<RecipeFormValues>({
     initialValues: {
       name: initialRecipe ? initialRecipe.recipe_name : '',
-      time: initialRecipe && initialRecipe.time ? initialRecipe.time.toString() : '',
+      time: initialRecipe && initialRecipe.time ? formatTime(initialRecipe.time) : '',
       ingredients: initialRecipe
         ? initialRecipe.ingredients.map((ingredientStr, index) => {
             const regex = /^(\d+(?:\.\d+)?)?\s*(\w+)?\s*of\s*(.+)$/i;

@@ -167,7 +167,7 @@ const RecipeShow = ({ data }: { data: Recipe }) => {
       <Group justify='space-between' mt='md' mb='xs'>
         <Title order={1}>
           {recipe_name || 'Recipe'}
-          {currentUserId === data.user_id && (
+          {currentUserId === data.user_id && currentUserId && (
             <Button
               variant='subtle'
               size='sm'
