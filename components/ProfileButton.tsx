@@ -13,6 +13,7 @@ import { Bookmark, LogOut, NotebookPen, NotebookText } from 'lucide-react';
 import { LogoutButton } from './LogoutButton';
 import LoginButton from './LoginButton';
 import { SavedRedirector } from './SavedRedirector';
+import { CreatedRecipesRedirector } from './CreatedRecipesRedirector';
 
 const nameToNumber = (name: string) => {
   return [...name].reduce((sum, char) => char.charCodeAt(0) + sum, 0);
@@ -54,7 +55,9 @@ export const ProfileButton = async () => {
       <MenuDropdown>
         <MenuLabel>Recipes</MenuLabel>
         <MenuItem leftSection={<NotebookPen />}>Create a Recipe</MenuItem>
-        <MenuItem leftSection={<NotebookText />}>Created Recipes</MenuItem>
+        <MenuItem component={CreatedRecipesRedirector} leftSection={<NotebookText />}>
+          My Recipes
+        </MenuItem>
         <MenuItem component={SavedRedirector} leftSection={<Bookmark />}>
           Saved Recipes
         </MenuItem>
