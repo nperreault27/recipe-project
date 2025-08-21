@@ -1,4 +1,5 @@
 import { EditRecipe } from '@/components/EditRecipe';
+import { Suspense } from 'react';
 
 export default async function Page({
   params,
@@ -9,7 +10,9 @@ export default async function Page({
 
   return (
     <main className='min-h-screen flex flex-col items-center'>
-      <EditRecipe id={resolvedParams.id} />
+        <Suspense fallback={<div>Loading...</div>}>
+            <EditRecipe id={resolvedParams.id} />
+        </Suspense>
     </main>
   );
 }

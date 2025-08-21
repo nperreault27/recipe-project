@@ -1,33 +1,20 @@
-'use client'
-import { useEffect, useState } from 'react';
 import { Recipe } from '@/app/types/index';
-import { createClient } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
 import { AddRecipe } from './AddRecipe';
 
-export const EditRecipe = ({ id }: { id: string }) => {
-  const [recipe, setRecipe] = useState<Recipe | null>(null);
-  const [loading, setLoading] = useState(true);
+export const EditRecipe = async({ id }: { id: string }) => {
 
-  useEffect(() => {
-    const fetchRecipe = async () => {
-      const supabase = createClient();
+ const supabase = await createClient();
       const { data, error } = await supabase
         .from('all_recipies')
         .select('*')
         .eq('id', id)
         .single();
-      if (!error && data) {
-        setRecipe(data);
+      if (error && data) {
+        return <div>Error loading recipe: {error}</div>;
       }
-      setLoading(false);
-    };
-    fetchRecipe();
-  }, [id]);
 
-  if (loading) return <div>Loading...</div>;
-  if (!recipe) return <div>Recipe not found.</div>;
-
-  return <AddRecipe initialRecipe={recipe} isEditMode={true} />;
+  return <AddRecipe initialRecipe={data} isEditMode={true} />;
 };
 
 export default EditRecipe;

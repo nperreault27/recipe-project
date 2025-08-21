@@ -20,6 +20,7 @@ import { formatCapitalize } from '@/app/utils/formatCapitalize';
 import { Recipe } from '@/app/types/index';
 import {formatTime} from "@/app/utils/formatTime";
 import { useEffect, useState } from 'react';
+import { isFloat64Array } from 'util/types';
 
 type RecipeFormValues = {
   name: string;
@@ -193,7 +194,6 @@ export const AddRecipe = ({
 
   const handleDelete = async () => {
     if (!initialRecipe) return;
-
     const confirmed = confirm('Are you sure you want to delete this recipe?');
     if (!confirmed) return;
 
@@ -209,6 +209,14 @@ export const AddRecipe = ({
       window.location.href = window.location.origin;
     }
   };
+  const isCreator = initialRecipe?.user_id === activeUserId;
+  if (!isCreator && isEditMode && userCheckComplete) {
+    window.location.href = window.location.origin + '/recipe/' + initialRecipe?.id + '/' + initialRecipe?.recipe_name
+    return <>No permission</>
+  }
+  else if(!userCheckComplete){
+    return <>Loading...</>
+  }
 
   return (
     <Paper radius='md' shadow='md' withBorder bg={'#EEEEEE'} p='xl'>
