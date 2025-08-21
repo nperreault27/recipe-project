@@ -18,7 +18,7 @@ import {
   useMantineTheme,
 } from '@mantine/core';
 
-import { SquarePen, Trash2 } from 'lucide-react';
+import { SquarePen } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 import { formatTime } from '@/app/utils/formatTime';
@@ -119,18 +119,6 @@ const RecipeShow = ({ data }: { data: Recipe }) => {
     router.push(`/recipe/${recipeId}/${recipe_name}/edit`);
   };
 
-  const handleDelete = async () => {
-    if (!currentUserId || currentUserId !== data.user_id) return;
-    const { error } = await supabase
-      .from('all_recipies')
-      .delete()
-      .eq('id', recipeId);
-    if (error) {
-      alert('Failed to delete recipe: ' + error.message);
-      return;
-    }
-    window.location.href = window.location.origin;
-  };
 
   return (
     <>
