@@ -128,8 +128,6 @@ export const AddRecipe = ({
     fetchUser();
   }, []);
 
-  const isOwner = isEditMode && initialRecipe && activeUserId === initialRecipe.user_id;
-
   const handleSubmit = async (values: RecipeFormValues) => {
     const { name, ingredients, steps, time } = values;
     const supabase = createClient();
