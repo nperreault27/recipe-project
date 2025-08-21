@@ -20,7 +20,7 @@ const SavedCheckbox = ({ userId }: { userId: string | undefined }) => {
       label='My Saved Recipes'
       labelPosition='left'
       size='md'
-      c={'#ffca64'}
+      c={'#000000'}
       color={'#ffca64'}
       onChange={handleClick}
       checked={isChecked}
