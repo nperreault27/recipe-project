@@ -9,6 +9,7 @@ import {
   Title,
   useMantineTheme,
   Divider,
+  Text,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { FieldInputIngredient, Ingredient, Step } from './FieldInputIngredient';
@@ -18,6 +19,7 @@ import { UtensilsCrossed } from 'lucide-react';
 import { formatCapitalize } from '@/app/utils/formatCapitalize';
 import { Recipe } from '@/app/types/index';
 import {formatTime} from "@/app/utils/formatTime";
+import { useEffect, useState } from 'react';
 
 type RecipeFormValues = {
   name: string;
@@ -113,6 +115,20 @@ export const AddRecipe = ({
           : 'Please add at least one step',
     },
   });
+
+  const [activeUserId, setActiveUserId] = useState<string | null>(null);
+  const [userCheckComplete, setUserCheckComplete] = useState(false);
+  useEffect(() => {
+    const fetchUser = async () => {
+      const supabase = createClient();
+      const { data } = await supabase.auth.getUser();
+      setActiveUserId(data.user?.id || null);
+      setUserCheckComplete(true);
+    };
+    fetchUser();
+  }, []);
+
+  const isOwner = isEditMode && initialRecipe && activeUserId === initialRecipe.user_id;
 
   const handleSubmit = async (values: RecipeFormValues) => {
     const { name, ingredients, steps, time } = values;
@@ -219,16 +235,31 @@ export const AddRecipe = ({
           <Divider mt={'lg'} />
 
           <Group justify='center' mt='lg'>
-            <Button
-              bg={theme.colors.myGreen[8]}
-              type='submit'
-              leftSection={<UtensilsCrossed size={'20'} />}
-            >
-              {isEditMode ? 'Update Recipe' : 'Create Recipe'}
-            </Button>
-            {isEditMode && (
-              <Button color='red' onClick={handleDelete} ml={10}>
-                Delete Recipe
+            {isEditMode && (!initialRecipe || !userCheckComplete || activeUserId !== initialRecipe.user_id) ? (
+              <Text color='red' fw={600} mt={10}>
+                You do not have permission to edit this recipe.
+              </Text>
+            ) : (
+              <>
+                <Button
+                  bg={theme.colors.myGreen[8]}
+                  type='submit'
+                  leftSection={<UtensilsCrossed size={'20'} />}
+                >
+                  Update Recipe
+                </Button>
+                <Button color='red' onClick={handleDelete} ml={10}>
+                  Delete Recipe
+                </Button>
+              </>
+            )}
+            {!isEditMode && (
+              <Button
+                bg={theme.colors.myGreen[8]}
+                type='submit'
+                leftSection={<UtensilsCrossed size={'20'} />}
+              >
+                Create Recipe
               </Button>
             )}
           </Group>
