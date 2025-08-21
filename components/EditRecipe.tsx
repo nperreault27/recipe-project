@@ -1,4 +1,3 @@
-import { Recipe } from '@/app/types/index';
 import { createClient } from '@/lib/supabase/server';
 import { AddRecipe } from './AddRecipe';
 
