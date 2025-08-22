@@ -12,6 +12,7 @@ export const SearchResults = async ({
     recipeName: search = '',
     ingredients = '',
     savedRecipes = '',
+    createdRecipes = '',
   } = await searchParams;
 
   const supabase = await createClient();
@@ -41,6 +42,11 @@ export const SearchResults = async ({
         savedRecipeIds = userRecipes.saved;
       }
       query = query.in('id', savedRecipeIds);
+    }
+  }
+  if (createdRecipes !== '') {
+    if (userId) {
+      query = query.eq('user_id', userId);
     }
   }
   const recipes = await query.then((results) => {
