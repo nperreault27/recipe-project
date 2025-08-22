@@ -15,7 +15,9 @@ export const SearchResults = async ({
   } = await searchParams;
 
   const supabase = await createClient();
-  const { data: { user }, } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   const userId = user?.id;
   let query = supabase.from('all_recipies').select('*');
   if (search !== '') query = query.ilike('recipe_name', '%' + search + '%');
@@ -43,10 +45,8 @@ export const SearchResults = async ({
   }
   const recipes = await query.then((results) => {
     if (results.status === 200) {
-      console.log(results.data);
       return results.data;
     }
-    console.log(results);
     return [];
   });
   const count = recipes ? recipes.length : 0;

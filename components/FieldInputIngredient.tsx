@@ -49,6 +49,7 @@ export type RecipeFormValues = {
   time: string;
   ingredients: Ingredient[];
   steps: Step[];
+  image: File;
 };
 type FieldInputIngredientProps = {
   form: ReturnType<typeof useForm<RecipeFormValues>>;

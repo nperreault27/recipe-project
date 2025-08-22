@@ -1,7 +1,7 @@
 import { AspectRatio, Group, Paper, Skeleton, Stack } from '@mantine/core';
-import FeaturedRecipe from './FeaturedRecipe';
 import { Suspense } from 'react';
 import SearchBar from './SearchBar';
+import RecentlyAdded from './RecentlyAdded';
 
 const HomePage = () => {
   return (
@@ -13,7 +13,7 @@ const HomePage = () => {
       </AspectRatio>
       <Group grow p='0' h={'100%'}>
         <Suspense fallback={<Skeleton w={'100%'} h={300} />}>
-          <FeaturedRecipe />
+          <RecentlyAdded />
         </Suspense>
       </Group>
     </Stack>
