@@ -1,34 +1,51 @@
-import { createClient } from '@/lib/supabase/server';
+'use client';
+import { useState, useEffect } from 'react';
+import { createClient } from '@/lib/supabase/client';
 import { Autocomplete, Button, Group, Paper } from '@mantine/core';
 import { Search } from 'lucide-react';
 import SavedCheckbox from './SavedCheckbox';
 
-export const SearchAndFilterBar = async () => {
-  const supabase = await createClient();
-  const { data: { user }, } = await supabase.auth.getUser();
-  const userId = user?.id;
-  const ingredients = await supabase
-    .from('ingredients')
-    .select('*')
-    .then((result) => {
-      return result.status === 200
-        ? result.data!.map((ingredient) => ingredient.name)
-        : [];
-    });
-  const recipeNames = await supabase
-    .from('all_recipies')
-    .select('recipe_name')
-    .then((result) => {
-      return result.status === 200
-        ? result.data!.map((recipe) => recipe.recipe_name)
-        : [];
-    });
+const SearchAndFilterBar = () => {
+  const [userId, setUserId] = useState<string | undefined>(undefined);
+  const [savedChecked, setSavedChecked] = useState(true); // checked by default
+  const [createdChecked, setCreatedChecked] = useState(true); // checked by default
 
-  const filteredRecipes = [...new Set(recipeNames)];
+  useEffect(() => {
+    const supabase = createClient();
+    const getUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      if (data.user) {
+        setUserId(data.user.id);
+      }
+    };
+    getUser();
+  }, []);
+
+  const filteredRecipes: string[] = [];
+  const ingredients: string[] = [];
+
+  const handleSavedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSavedChecked(e.target.checked);
+  };
+  const handleCreatedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCreatedChecked(e.target.checked);
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (savedChecked) params.append('savedRecipes', 'true');
+    if (createdChecked) params.append('createdRecipes', 'true');
+    const recipeName = (e.currentTarget.recipeName?.value || '').trim();
+    if (recipeName) params.append('recipeName', recipeName);
+    const ingredients = (e.currentTarget.ingredients?.value || '').trim();
+    if (ingredients) params.append('ingredients', ingredients);
+    window.location.href = `/search?${params.toString()}`;
+  };
 
   return (
     <Paper w={'100%'} withBorder shadow='md' p={'md'}>
-      <form>
+      <form onSubmit={handleSubmit}>
         <Group justify='space-between' w={'100%'}>
           <Autocomplete
             name='recipeName'
@@ -51,7 +68,8 @@ export const SearchAndFilterBar = async () => {
             placeholder='Search by Ingredient'
           />
           <Group gap={'2rem'}>
-            <SavedCheckbox userId={userId} />
+            <SavedCheckbox label='My Saved Recipes' name='savedRecipes' checked={savedChecked} onChange={handleSavedChange} />
+            <SavedCheckbox label='My Recipes' name='createdRecipes' checked={createdChecked} onChange={handleCreatedChange} />
             <Button
               type='submit'
               color={'#ffca64'}
