@@ -7,7 +7,14 @@ const HomePage = () => {
   return (
     <Stack w={'100%'}>
       <AspectRatio ratio={16 / 9} flex={'0,0,100%'}>
-        <Paper withBorder bg={'#EEEEEE'}>
+        <Paper
+          withBorder
+          style={{
+            backgroundSize: 'cover',
+            backgroundImage:
+              "url('https://lpjqhqphiagelvoacvet.supabase.co/storage/v1/object/public/recipe-images/page_assets/AdobeStock_292203735.jpeg')",
+          }}
+        >
           <SearchBar />
         </Paper>
       </AspectRatio>
