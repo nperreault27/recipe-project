@@ -74,8 +74,21 @@ export default function RootLayout({
       <body className={`${geistSans.className} antialiased`}>
         <MantineProvider theme={theme}>
           <BackgroundImage src=''>
-            <Center>
-              <AppShell header={{ height: 60 }} padding={'xs'} w={'75%'}>
+            <Center
+              style={{
+                backgroundSize: 800,
+                backgroundRepeat: 'repeat',
+                backgroundAttachment: 'fixed',
+                backgroundImage:
+                  "url('https://lpjqhqphiagelvoacvet.supabase.co/storage/v1/object/public/recipe-images/page_assets/AdobeStock_117652620.jpeg')",
+              }}
+            >
+              <AppShell
+                style={{ opacity: 'unset' }}
+                header={{ height: 60 }}
+                padding={'xs'}
+                w={'75%'}
+              >
                 <AppShellHeader>
                   <Group
                     justify={'space-between'}

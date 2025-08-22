@@ -9,6 +9,7 @@ import {
   Title,
   useMantineTheme,
   Divider,
+  FileInput,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { FieldInputIngredient, Ingredient, Step } from './FieldInputIngredient';
@@ -22,6 +23,7 @@ type RecipeFormValues = {
   time: string;
   ingredients: Ingredient[];
   steps: Step[];
+  image: File;
 };
 
 function formatIngredient(ingredient: {
@@ -50,6 +52,7 @@ function formatIngredient(ingredient: {
 
 export const AddRecipe = () => {
   const theme = useMantineTheme();
+  const defaultFile = new File([''], '');
   const form = useForm<RecipeFormValues>({
     initialValues: {
       name: '',
@@ -68,6 +71,7 @@ export const AddRecipe = () => {
           key: 'initial-step',
         },
       ],
+      image: defaultFile,
     },
     validate: {
       name: (value) => (value.trim() === '' ? 'Recipe name is required' : null),
@@ -79,13 +83,18 @@ export const AddRecipe = () => {
         value.some((val) => val.instruction.trim().length > 0)
           ? null
           : 'Please add at least one step',
+      image: (file) =>
+        file.size < 5 * 1024 * 1024
+          ? null
+          : 'File size must be smaller than 5mb',
     },
   });
 
   const handleSubmit = async (values: RecipeFormValues) => {
-    const { name, ingredients, steps, time } = values;
-
+    const { name, ingredients, steps, time, image } = values;
+    const isDefault = image === defaultFile;
     const supabase = createClient();
+    const randomNum = Math.floor(Math.random() * 1000000).toString();
 
     const plainIngredients = ingredients
       .filter((i) => i.ingredient !== '')
@@ -96,13 +105,34 @@ export const AddRecipe = () => {
     const plainSteps = steps
       .filter((s) => s.instruction !== '')
       .map((s) => s.instruction.trim());
-
+    console.log(`public/${randomNum}${image.name}`.replace(/\s/g, ''));
+    const imageURL = async () => {
+      if (!isDefault) {
+        const { data, error } = await supabase.storage
+          .from('recipe-images')
+          .upload(`public/${randomNum}${image.name}`.replace(/\s/g, ''), image);
+        console.log(data, error);
+        if (!error) {
+          const { data } = supabase.storage
+            .from('recipe-images')
+            .getPublicUrl(
+              `public/${randomNum}${image.name}`.replace(/\s/g, '')
+            );
+          return data.publicUrl;
+        }
+        console.log(error);
+      }
+      return null;
+    };
     const { error } = await supabase.from('all_recipies').insert([
       {
         recipe_name: name,
         time: parseTimeToSeconds(time),
         ingredients: plainIngredients,
         steps: plainSteps,
+        image_link: isDefault
+          ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/300px-No_image_available.svg.png'
+          : await imageURL(),
       },
     ]);
 
@@ -155,6 +185,13 @@ export const AddRecipe = () => {
           />
 
           <FieldInputIngredient form={form} />
+          <FileInput
+            {...form.getInputProps('image')}
+            label='Upload Image'
+            placeholder='Add an image of your recipe'
+            accept='image/png,image/jpeg'
+            clearable
+          />
 
           <Divider mt={'lg'} />
 
