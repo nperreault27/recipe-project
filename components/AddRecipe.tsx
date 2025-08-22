@@ -54,10 +54,8 @@ function formatIngredient(ingredient: {
 
 export const AddRecipe = ({
   initialRecipe,
-  isEditMode = false,
 }: {
   initialRecipe?: Recipe;
-  isEditMode?: boolean;
 }) => {
   const theme = useMantineTheme();
   const form = useForm<RecipeFormValues>({
@@ -140,7 +138,7 @@ export const AddRecipe = ({
       .map((s) => s.instruction.trim());
 
     let error;
-    if (isEditMode && initialRecipe) {
+    if (initialRecipe) {
       const { error: updateError } = await supabase
         .from('all_recipies')
         .update({
@@ -209,7 +207,7 @@ export const AddRecipe = ({
     }
   };
   const isCreator = initialRecipe?.user_id === activeUserId;
-  if (!isCreator && isEditMode && userCheckComplete) {
+  if (!isCreator && initialRecipe && userCheckComplete) {
     window.location.href = window.location.origin + '/recipe/' + initialRecipe?.id + '/' + initialRecipe?.recipe_name
     return <>No permission</>
   }
@@ -221,17 +219,17 @@ export const AddRecipe = ({
     <Paper radius='md' shadow='md' withBorder bg={'#EEEEEE'} p='xl'>
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Stack gap={10}>
-          <Title mb={10}>{isEditMode ? 'Edit Recipe' : 'Create Recipe'}</Title>
+          <Title mb={10}>{initialRecipe ? 'Edit Recipe' : 'Create Recipe'}</Title>
           <TextInput
-            label={isEditMode ? 'Edit Recipe Name' : 'Recipe Name'}
-            placeholder={isEditMode ? 'Edit the name...' : 'e.g. Spaghetti Bolognese'}
+            label={initialRecipe ? 'Edit Recipe Name' : 'Recipe Name'}
+            placeholder={initialRecipe ? 'Edit the name...' : 'e.g. Spaghetti Bolognese'}
             withAsterisk
             {...form.getInputProps('name')}
           />
 
           <TextInput
-            label={isEditMode ? 'Edit Time to Make' : 'Time to Make'}
-            placeholder={isEditMode ? 'Edit the time...' : 'e.g. 45 minutes'}
+            label={initialRecipe ? 'Edit Time to Make' : 'Time to Make'}
+            placeholder={initialRecipe ? 'Edit the time...' : 'e.g. 45 minutes'}
             {...form.getInputProps('time')}
           />
 
@@ -240,12 +238,14 @@ export const AddRecipe = ({
           <Divider mt={'lg'} />
 
           <Group justify='center' mt='lg'>
-            {isEditMode && (!initialRecipe || !userCheckComplete || activeUserId !== initialRecipe.user_id) ? (
+            {initialRecipe && (!userCheckComplete || activeUserId !== initialRecipe.user_id) ? (
               <Text color='red' fw={600} mt={10}>
                 You do not have permission to edit this recipe.
               </Text>
             ) : (
               <>
+               { initialRecipe && (
+               <>
                 <Button
                   bg={theme.colors.myGreen[8]}
                   type='submit'
@@ -256,9 +256,11 @@ export const AddRecipe = ({
                 <Button color='red' onClick={handleDelete} ml={10}>
                   Delete Recipe
                 </Button>
+               </>
+                ) }
               </>
             )}
-            {!isEditMode && (
+            {!initialRecipe && (
               <Button
                 bg={theme.colors.myGreen[8]}
                 type='submit'
