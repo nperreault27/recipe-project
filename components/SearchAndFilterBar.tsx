@@ -1,25 +1,12 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase/client';
+import { useState } from 'react';
 import { Autocomplete, Button, Group, Paper } from '@mantine/core';
 import { Search } from 'lucide-react';
 import SavedCheckbox from './SavedCheckbox';
 
 const SearchAndFilterBar = () => {
-  const [userId, setUserId] = useState<string | undefined>(undefined);
   const [savedChecked, setSavedChecked] = useState(true); // checked by default
   const [createdChecked, setCreatedChecked] = useState(true); // checked by default
-
-  useEffect(() => {
-    const supabase = createClient();
-    const getUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      if (data.user) {
-        setUserId(data.user.id);
-      }
-    };
-    getUser();
-  }, []);
 
   const filteredRecipes: string[] = [];
   const ingredients: string[] = [];
