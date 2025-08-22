@@ -18,12 +18,15 @@ import {
   useMantineTheme,
 } from '@mantine/core';
 
+import { SquarePen } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+
 import { formatTime } from '@/app/utils/formatTime';
 import SaveRecipeButton from './SaveRecipeButton';
 import { Recipe } from '@/app/types/index';
 import { getStarRating } from '@/app/utils/getStarRating';
 import { useDisclosure } from '@mantine/hooks';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 
 const RecipeShow = ({ data }: { data: Recipe }) => {
@@ -42,10 +45,12 @@ const RecipeShow = ({ data }: { data: Recipe }) => {
   const [opened, { open, close }] = useDisclosure(false);
   const [userId, setUserId] = useState('');
   const [updatedRatings, updateRatings] = useState(ratings);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const supabase = createClient();
   const starRating = getStarRating(updatedRatings);
   const timeToCook = formatTime(Number(time));
   const [value, setValue] = useState(starRating);
+  const router = useRouter();
 
   const allIngredients =
     ingredients?.map &&
@@ -102,6 +107,19 @@ const RecipeShow = ({ data }: { data: Recipe }) => {
     }
   };
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      setCurrentUserId(data.user?.id || null);
+    };
+    fetchUser();
+  }, []);
+
+  const handleEdit = () => {
+    router.push(`/recipe/${recipeId}/${recipe_name}/edit`);
+  };
+
+
   return (
     <>
       <Modal
@@ -136,7 +154,20 @@ const RecipeShow = ({ data }: { data: Recipe }) => {
         </Stack>
       </Modal>
       <Group justify='space-between' mt='md' mb='xs'>
-        <Title order={1}>{recipe_name || 'Recipe'}</Title>
+        <Title order={1} >
+          {recipe_name || 'Recipe'}
+          {currentUserId === data.user_id && currentUserId && (
+            <Button
+              variant='subtle'
+              size='sm'
+              ml={10}
+              mb={5}
+              onClick={handleEdit}
+            >
+              <SquarePen size={24} />
+            </Button>
+          )}
+        </Title>
 
         <Group justify='space-between' mt='md' mb='xs'>
           <Button variant='transparent' onClick={handleModalOpen}>
@@ -148,7 +179,7 @@ const RecipeShow = ({ data }: { data: Recipe }) => {
                 fractions={2}
                 onClick={(e) => {
                   const target = e.nativeEvent.target as HTMLInputElement;
-                  setValue(Number(target?.value) || value); //value does in fact exist here
+                  setValue(Number(target?.value) || value);
                 }}
               />
               <Text c='black'>
@@ -157,7 +188,7 @@ const RecipeShow = ({ data }: { data: Recipe }) => {
             </Group>
           </Button>
           {Number(time) > 0 ? <Badge color='pink'>{timeToCook}</Badge> : <></>}
-          <SaveRecipeButton recipeId={recipeId}/>
+          <SaveRecipeButton recipeId={recipeId} />
         </Group>
       </Group>
 
@@ -167,7 +198,7 @@ const RecipeShow = ({ data }: { data: Recipe }) => {
           {created_by || 'User'}
         </Text>
       </Group>
-                
+
       <Grid gutter={{ base: 5, xs: 'md', md: 'xl', xl: 50 }}>
         {image_link ===
         'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/300px-No_image_available.svg.png' ? (
