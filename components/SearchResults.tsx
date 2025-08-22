@@ -27,22 +27,7 @@ export const SearchResults = async ({
         return i.toLocaleLowerCase();
       })
     );
-  if (savedRecipes !== '' && createdRecipes !== '' && userId) {
-    let savedRecipeIds: string[] = [];
-    const { data: userRecipes } = await supabase
-      .from('user_recipes')
-      .select('saved')
-      .eq('id', userId)
-      .single();
-    if (userRecipes) {
-      savedRecipeIds = userRecipes.saved;
-    }
-    if (savedRecipeIds.length > 0) {
-      query = query.or(`id.in.(${savedRecipeIds.join(',')}),user_id.eq.${userId}`);
-    } else {
-      query = query.eq('user_id', userId);
-    }
-  } else if (savedRecipes !== '') {
+  if (savedRecipes !== '') {
     let savedRecipeIds: string[] = [];
     if (userId) {
       const { data: userRecipes } = await supabase
@@ -50,30 +35,17 @@ export const SearchResults = async ({
         .select('saved')
         .eq('id', userId)
         .single();
+
       if (userRecipes) {
         savedRecipeIds = userRecipes.saved;
       }
-      if (savedRecipeIds.length > 0) {
-        query = query.in('id', savedRecipeIds);
-      } else {
-        return <Flex gap={'sm'} justify={'flex-start'} wrap={'wrap'}><Title ml={'md'}> No Results</Title></Flex>;
-      }
+      query = query.in('id', savedRecipeIds);
     }
-  } else if (createdRecipes !== '') {
+  }
+  if (createdRecipes !== '') {
     if (userId) {
       query = query.eq('user_id', userId);
     }
-  } else if (savedRecipes === '' && createdRecipes === '' && userId && search === '' && ingredients === '') {
-    let savedRecipeIds: string[] = [];
-    const { data: userRecipes } = await supabase
-      .from('user_recipes')
-      .select('saved')
-      .eq('id', userId)
-      .single();
-    if (userRecipes) {
-      savedRecipeIds = userRecipes.saved;
-    }
-    query = query.not('id', 'in', savedRecipeIds).not('user_id', 'eq', userId);
   }
   const recipes = await query.then((results) => {
     if (results.status === 200) {

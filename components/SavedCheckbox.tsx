@@ -1,23 +1,29 @@
 'use client';
 
 import { Checkbox } from '@mantine/core';
+import { useState } from 'react';
 
-const SavedCheckbox = ({ label, name, checked, onChange }: {
-  label: string;
-  name: string;
-  checked: boolean;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-}) => {
+const SavedCheckbox = ({ userId }: { userId: string | undefined }) => {
+  const [isChecked, setIsChecked] = useState(false);
+
+  const handleClick = () => {
+    if (userId) {
+      setIsChecked(!isChecked);
+    } else {
+      alert('Must be signed in to save recipes');
+    }
+  };
+
   return (
     <Checkbox
-      name={name}
-      label={label}
+      name='savedRecipes'
+      label='My Saved Recipes'
       labelPosition='left'
       size='md'
       c={'#000000'}
       color={'#ffca64'}
-      onChange={onChange}
-      checked={checked}
+      onChange={handleClick}
+      checked={isChecked}
     />
   );
 };
